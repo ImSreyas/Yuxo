@@ -4,7 +4,7 @@ export default function Home() {
   return (
     <main>
       <div className="text-base">
-        Hello i'm sreyas 
+        Hello Im sreyas 
       </div>
     </main>
   );
