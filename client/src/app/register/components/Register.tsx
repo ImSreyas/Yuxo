@@ -89,7 +89,7 @@ const Register = () => {
                     control={form.control}
                     name="password"
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem className="w-full">
                         <FormLabel>Password</FormLabel>
                         <FormControl>
                           <Input
@@ -111,7 +111,7 @@ const Register = () => {
                     control={form.control}
                     name="confirm_password"
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem className="w-full">
                         <FormLabel>Confirm password</FormLabel>
                         <FormControl>
                           <Input
