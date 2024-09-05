@@ -7,7 +7,7 @@ export const description =
 
 export default function page() {
   return (
-    <div className="w-full lg:grid lg:min-h-screen lg:grid-cols-2 xl:min-h-[800px]">
+    <div className="w-full lg:grid lg:grid-cols-5 min-h-screen">
       <LoginCover />
       <Login />
     </div>

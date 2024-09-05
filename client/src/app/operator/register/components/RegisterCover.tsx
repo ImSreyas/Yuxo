@@ -2,9 +2,9 @@ import Image from "next/image"
 
 const RegisterCover = () => {
   return (
-      <div className="hidden bg-muted lg:block">
+      <div className="hidden bg-muted lg:block lg:col-span-3">
         <Image
-          src="/placeholder.svg"
+          src="/map.png"
           alt=" "
           width="1920"
           height="1080"

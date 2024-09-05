@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label"
 
 const Login = () => {
   return (
-    <div className="flex items-center justify-center py-12">
+    <div className="flex items-center justify-center py-24 lg:col-span-2">
         <div className="mx-auto grid w-[350px] gap-6">
           <div className="grid gap-2 text-center">
             <h1 className="text-3xl font-bold">Login</h1>
@@ -21,7 +21,6 @@ const Login = () => {
                 id="email"
                 type="email"
                 placeholder="demo@example.com"
-                required
               />
             </div>
             <div className="grid gap-2">
@@ -34,7 +33,7 @@ const Login = () => {
                   Forgot your password?
                 </Link> */}
               </div>
-              <Input id="password" type="password" required />
+              <Input id="password" type="password" />
             </div>
             <Button type="submit" className="w-full">
               Login
@@ -45,7 +44,7 @@ const Login = () => {
           </div>
           <div className="mt-4 text-center text-sm">
             Don&apos;t have an account?{" "}
-            <Link href="#" className="underline">
+            <Link href="/user/register" className="underline">
               Sign up
             </Link>
           </div>

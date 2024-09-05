@@ -4,7 +4,6 @@ import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,10 +25,9 @@ const FormSchema = z
     email: z.string().email({ message: "Invalid email address." }),
     password: z
       .string()
-      .min(6, { message: "Password must be at least 6 characters long." }),
+      .min(6, { message: "Invalid password" }),
     confirm_password: z
-      .string()
-      .min(6, { message: "Please confirm your password." }),
+      .string({ message: "Please confirm your password." })
   })
   .refine((data) => data.password === data.confirm_password, {
     message: "Passwords do not match.",
@@ -51,7 +49,7 @@ const Register = () => {
   }
 
   return (
-    <div className="flex items-center justify-center py-12">
+    <div className="flex items-center justify-center py-24 lg:col-span-2">
       <div className="mx-auto grid w-[350px] gap-6">
         <div className="grid gap-2 text-center">
           <h1 className="text-3xl font-bold">Sign Up</h1>
@@ -74,7 +72,6 @@ const Register = () => {
                           id="email"
                           type="email"
                           placeholder="demo@example.com"
-                          required
                           {...field}
                         />
                       </FormControl>
@@ -95,10 +92,10 @@ const Register = () => {
                           <Input
                             id="password"
                             type="password"
-                            required
                             {...field}
                           />
                         </FormControl>
+                        <FormDescription>Password must be at least 6 characters long</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -117,7 +114,6 @@ const Register = () => {
                           <Input
                             id="confirm_password"
                             type="password"
-                            required
                             {...field}
                           />
                         </FormControl>
@@ -132,7 +128,7 @@ const Register = () => {
               </Button>
               <div className="relative">
                 <Separator className="my-4" />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white text-muted-foreground px-4 w-fit text-xs ">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-card text-muted-foreground px-4 w-fit text-xs ">
                   OR CONTINUE WITH
                 </div>
               </div>
@@ -142,11 +138,19 @@ const Register = () => {
             </div>
           </form>
         </Form>
-        <div className="mt-4 text-center text-sm">
-          Already have an account?{" "}
-          <Link href="/login" className="underline">
-            Login
-          </Link>
+        <div>
+          <div className="mt-1 text-center text-sm">
+            Already have an account?{" "}
+            <Link href="/login" className="underline">
+              Login
+            </Link>
+          </div>
+          <div className="mt-1 text-center text-sm">
+            Operators?{" "}
+            <Link href="/operator/register" className="underline">
+              sign up
+            </Link>
+          </div>
         </div>
       </div>
     </div>

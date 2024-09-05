@@ -1,6 +1,6 @@
 import Image from "next/image"
 
-const LoginCover = () => {
+const RegisterCover = () => {
   return (
       <div className="hidden bg-muted lg:block lg:col-span-3">
         <Image
@@ -14,4 +14,4 @@ const LoginCover = () => {
   )
 }
 
-export default LoginCover
+export default RegisterCover
