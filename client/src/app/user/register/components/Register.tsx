@@ -19,22 +19,23 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import useAuth from "@/app/hooks/useAuth";
 
 const FormSchema = z
   .object({
     email: z.string().email({ message: "Invalid email address." }),
-    password: z
-      .string()
-      .min(6, { message: "Invalid password" }),
-    confirm_password: z
-      .string({ message: "Please confirm your password." })
+    password: z.string().min(6, { message: "Invalid password" }),
+    confirm_password: z.string({ message: "Please confirm your password." }),
   })
   .refine((data) => data.password === data.confirm_password, {
     message: "Passwords do not match.",
     path: ["confirm_password"],
   });
 
+// Component
 const Register = () => {
+  const { userSignUp, loading, error: authError } = useAuth();
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -44,9 +45,10 @@ const Register = () => {
     },
   });
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log(data);
-  }
+  const onSubmit = async (data: z.infer<typeof FormSchema>) => {
+    const user = await userSignUp(data.email, data.password);
+    // console.log(user);
+  };
 
   return (
     <div className="flex items-center justify-center py-24 lg:col-span-2">
@@ -70,12 +72,14 @@ const Register = () => {
                       <FormControl>
                         <Input
                           id="email"
-                          type="email"
+                          // type="email"
                           placeholder="demo@example.com"
                           {...field}
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage>
+                        {authError ? "Email already registered" : null}
+                      </FormMessage>
                     </FormItem>
                   )}
                 />
@@ -89,14 +93,12 @@ const Register = () => {
                       <FormItem className="w-full">
                         <FormLabel>Password</FormLabel>
                         <FormControl>
-                          <Input
-                            id="password"
-                            type="password"
-                            {...field}
-                          />
+                          <Input id="password" type="password" {...field} />
                         </FormControl>
-                        <FormDescription>Password must be at least 6 characters long</FormDescription>
-                        <FormMessage />
+                        <FormDescription>
+                          Password must be at least 6 characters long
+                        </FormDescription>
+                        <FormMessage></FormMessage>
                       </FormItem>
                     )}
                   />
@@ -117,7 +119,7 @@ const Register = () => {
                             {...field}
                           />
                         </FormControl>
-                        <FormMessage />
+                        <FormMessage></FormMessage>
                       </FormItem>
                     )}
                   />
