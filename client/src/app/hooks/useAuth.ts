@@ -12,7 +12,6 @@ const useAuth = () => {
       email,
       password,
     });
-    console.log(data);
     const user = data?.user;
     if (error) {
       setError(error.message);
@@ -20,8 +19,17 @@ const useAuth = () => {
       router.push("/");
     }
 
-    return user;
+    return { user, error };
   };
+
+  const logout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      setError(error.message);
+    }
+    return { error };
+  };
+
   const userSignUp = async (email: string, password: string) => {
     setLoading(true);
     setError("");
@@ -35,9 +43,8 @@ const useAuth = () => {
       if (user) {
         const { error: insertError } = await supabase.from("tbl_users").insert({
           user_id: user.id,
-          name: "",
+          email: user.email,
         });
-        console.log(insertError);
         login(email, password);
         // router.push("/");
       }
@@ -48,21 +55,30 @@ const useAuth = () => {
 
   const operatorSignUp = async (email: string, password: string) => {
     setLoading(true);
-    setError(null);
+    setError("");
 
     const { data, error } = await supabase.auth.signUp({ email, password });
-    console.log(data);
+    const operator = data?.user;
 
-    setLoading(false);
     if (error) {
       setError(error.message);
     } else {
-      router.push("/");
+      if (operator) {
+        const { error: insertError } = await supabase.from("tbl_operators").insert({
+          operator_id: operator.id,
+          email: operator.email,
+        });
+        login(email, password);
+        // router.push("/");
+      }
     }
-    return await supabase.auth.getUser();
+    setLoading(false);
+    return operator;
   };
 
   return {
+    login,
+    logout,
     userSignUp,
     operatorSignUp,
     loading,

@@ -33,7 +33,7 @@ const FormSchema = z
   });
 
 // Component
-const Register = () => {
+const SignUp = () => {
   const { userSignUp, loading, error: authError } = useAuth();
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -125,7 +125,7 @@ const Register = () => {
                   />
                 </div>
               </div>
-              <Button type="submit" className="w-full">
+              <Button type="submit" className="w-full mt-1">
                 Sign Up
               </Button>
               <div className="relative">
@@ -134,7 +134,7 @@ const Register = () => {
                   OR CONTINUE WITH
                 </div>
               </div>
-              <Button variant="outline" className="w-full">
+              <Button type="button" variant="outline" className="w-full">
                 Google
               </Button>
             </div>
@@ -149,7 +149,7 @@ const Register = () => {
           </div>
           <div className="mt-1 text-center text-sm">
             Operators?{" "}
-            <Link href="/operator/register" className="underline">
+            <Link href="/operator/signup" className="underline">
               sign up
             </Link>
           </div>
@@ -159,4 +159,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default SignUp;

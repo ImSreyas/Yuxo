@@ -1,22 +1,25 @@
 -- Table to store admins
 CREATE TABLE IF NOT EXISTS public.tbl_admins (
     admin_id uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-    name VARCHAR NOT NULL
+    name VARCHAR,
+    email VARCHAR NOT NULL
 );
 
 -- Table to store users
 CREATE TABLE IF NOT EXISTS public.tbl_users (
     user_id uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-    name VARCHAR NOT NULL
+    name VARCHAR,
+    email VARCHAR NOT NULL
 );
 
 -- Table to store operators
 CREATE TABLE IF NOT EXISTS public.tbl_operators (
     operator_id uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-    name VARCHAR NOT NULL,
-    phone VARCHAR NOT NULL,
-    place VARCHAR NOT NULL,
-    permit_no VARCHAR NOT NULL,
+    name VARCHAR,
+    phone VARCHAR,
+    email VARCHAR NOT NULL,
+    place VARCHAR,
+    permit_no VARCHAR,
     is_ksrtc_operator BOOLEAN DEFAULT FALSE
 );
 

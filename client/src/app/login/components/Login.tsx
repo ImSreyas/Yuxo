@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import Link from "next/link";
 
@@ -16,14 +16,27 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Separator } from "@/components/ui/separator";
+import useAuth from "@/app/hooks/useAuth";
+import supabase from "@/utils/supabase/client";
+import { useState } from "react";
 
 const FormSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
   password: z.string({ message: "Password should not be empty" }),
 });
 
+type LoginErr = {
+  emailErr: string | null;
+  passwordErr: string | null;
+};
+
 const Login = () => {
-  
+  const [loginErr, setLoginErr] = useState<LoginErr>({
+    emailErr: null,
+    passwordErr: null,
+  });
+  const { login } = useAuth();
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -32,9 +45,24 @@ const Login = () => {
     },
   });
 
-  const onSubmit = async () => {
+  const onSubmit = async ({ email, password }: z.infer<typeof FormSchema>) => {
+    const user = await supabase
+      .from("tbl_users")
+      .select()
+      .eq("email", email)
+      .single();
 
-  }
+    const data = user?.data;
+
+    if (data) {
+      const { error } = await login(email, password);
+      if (error) {
+        setLoginErr({ emailErr: null, passwordErr: "Wrong password" });
+      }
+    } else {
+      setLoginErr({ emailErr: "user not found", passwordErr: null });
+    }
+  };
 
   return (
     <div className="flex items-center justify-center py-24 lg:col-span-2">
@@ -63,7 +91,7 @@ const Login = () => {
                           {...field}
                         />
                       </FormControl>
-                      <FormMessage></FormMessage>
+                      <FormMessage>{loginErr.emailErr}</FormMessage>
                     </FormItem>
                   )}
                 />
@@ -76,21 +104,22 @@ const Login = () => {
                     <FormItem>
                       <div className="flex items-center">
                         <FormLabel htmlFor="password">Password</FormLabel>
-                        {/* <Link
-                            href="/forgot-password"
-                            className="ml-auto inline-block text-sm underline"
-                          >
-                            Forgot your password?
-                          </Link> */}
+                        <Link
+                          href=""
+                          className="ml-auto inline-block text-sm underline"
+                        >
+                          Forgot your password?
+                        </Link>
                       </div>
                       <FormControl>
                         <Input id="password" type="password" {...field} />
                       </FormControl>
+                      <FormMessage>{loginErr.passwordErr}</FormMessage>
                     </FormItem>
                   )}
                 />
               </div>
-              <Button type="submit" className="w-full">
+              <Button type="submit" className="w-full mt-1">
                 Login
               </Button>
               <div className="relative">
@@ -107,7 +136,7 @@ const Login = () => {
         </Form>
         <div className="mt-4 text-center text-sm">
           Don&apos;t have an account?{" "}
-          <Link href="/user/register" className="underline">
+          <Link href="/user/signup" className="underline">
             Sign up
           </Link>
         </div>
