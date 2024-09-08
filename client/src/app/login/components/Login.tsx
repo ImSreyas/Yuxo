@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
 import {
   Form,
   FormControl,
@@ -17,8 +18,8 @@ import {
 } from "@/components/ui/form";
 import { Separator } from "@/components/ui/separator";
 import useAuth from "@/app/hooks/useAuth";
-import supabase from "@/utils/supabase/client";
 import { useState } from "react";
+import { type authCheckResponse } from "@/lib/types/auth";
 
 const FormSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -46,21 +47,22 @@ const Login = () => {
   });
 
   const onSubmit = async ({ email, password }: z.infer<typeof FormSchema>) => {
-    const user = await supabase
-      .from("tbl_users")
-      .select()
-      .eq("email", email)
-      .single();
+    try {
+      const response = await axios.post("/api/auth/find", {
+        email,
+      });
+      const data: authCheckResponse = response.data;
 
-    const data = user?.data;
-
-    if (data) {
-      const { error } = await login(email, password);
-      if (error) {
-        setLoginErr({ emailErr: null, passwordErr: "Wrong password" });
+      if (data.success) {
+        const { error } = await login(email, password);
+        if (error) {
+          setLoginErr({ emailErr: null, passwordErr: "Wrong password" });
+        }
+      } else {
+        setLoginErr({ emailErr: "User not found", passwordErr: null });
       }
-    } else {
-      setLoginErr({ emailErr: "user not found", passwordErr: null });
+    } catch (error: any) {
+      console.log(error.message);
     }
   };
 
