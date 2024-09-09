@@ -149,7 +149,7 @@ const SignUp = () => {
           </div>
           <div className="mt-1 text-center text-sm">
             Operators?{" "}
-            <Link href="/operator/signup" className="underline">
+            <Link href="/signup/operator" className="underline">
               sign up
             </Link>
           </div>

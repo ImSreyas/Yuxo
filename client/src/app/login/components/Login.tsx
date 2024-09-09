@@ -138,7 +138,7 @@ const Login = () => {
         </Form>
         <div className="mt-4 text-center text-sm">
           Don&apos;t have an account?{" "}
-          <Link href="/user/signup" className="underline">
+          <Link href="/signup/user" className="underline">
             Sign up
           </Link>
         </div>
