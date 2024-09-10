@@ -32,9 +32,14 @@ export async function POST(request: NextRequest) {
   }
 
   const data = userData || operatorData;
+  let userRole: string | null = null;
+  if (data) {
+    userRole = userData ? "user" : "operator";
+  }
 
   const response: authCheckResponse = {
     success: true,
+    userRole,
     data,
   };
 

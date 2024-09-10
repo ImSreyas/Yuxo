@@ -20,6 +20,7 @@ import { Separator } from "@/components/ui/separator";
 import useAuth from "@/app/hooks/useAuth";
 import { useState } from "react";
 import { type authCheckResponse } from "@/lib/types/auth";
+import { redirect } from "next/dist/server/api-utils";
 
 const FormSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -31,6 +32,7 @@ type LoginErr = {
   passwordErr: string | null;
 };
 
+// Main component
 const Login = () => {
   const [loginErr, setLoginErr] = useState<LoginErr>({
     emailErr: null,
@@ -54,7 +56,19 @@ const Login = () => {
       const data: authCheckResponse = response.data;
 
       if (data.success) {
-        const { error } = await login(email, password);
+        let redirectPath = ""
+        switch(data.userRole) {
+          case "user":
+            redirectPath = "/"
+            break;
+          case "operator":
+            redirectPath = "/operator"
+            break;
+          default:
+            redirectPath = "/"
+        }
+
+        const { error } = await login(email, password, redirectPath);
         if (error) {
           setLoginErr({ emailErr: null, passwordErr: "Wrong password" });
         }

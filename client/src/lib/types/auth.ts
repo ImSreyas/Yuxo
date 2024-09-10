@@ -1,5 +1,6 @@
 export type authCheckResponse = {
-  success: boolean,
-  data?: any,
-  error?: any
-}
+  success: boolean;
+  userRole?: string | null;
+  data?: any;
+  error?: any;
+};
