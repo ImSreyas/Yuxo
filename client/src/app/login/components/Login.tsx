@@ -20,7 +20,7 @@ import { Separator } from "@/components/ui/separator";
 import useAuth from "@/app/hooks/useAuth";
 import { useState } from "react";
 import { type authCheckResponse } from "@/lib/types/auth";
-import { redirect } from "next/dist/server/api-utils";
+import { Spinner } from "@/components/ui/spinner";
 
 const FormSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -34,6 +34,7 @@ type LoginErr = {
 
 // Main component
 const Login = () => {
+  const [loading, setLoading] = useState<boolean>(false);
   const [loginErr, setLoginErr] = useState<LoginErr>({
     emailErr: null,
     passwordErr: null,
@@ -49,6 +50,7 @@ const Login = () => {
   });
 
   const onSubmit = async ({ email, password }: z.infer<typeof FormSchema>) => {
+    setLoading(true);
     try {
       const response = await axios.post("/api/auth/find", {
         email,
@@ -56,16 +58,16 @@ const Login = () => {
       const data: authCheckResponse = response.data;
 
       if (data.success) {
-        let redirectPath = ""
-        switch(data.userRole) {
+        let redirectPath = "";
+        switch (data.userRole) {
           case "user":
-            redirectPath = "/"
+            redirectPath = "/";
             break;
           case "operator":
-            redirectPath = "/operator"
+            redirectPath = "/operator";
             break;
           default:
-            redirectPath = "/"
+            redirectPath = "/";
         }
 
         const { error } = await login(email, password, redirectPath);
@@ -78,6 +80,7 @@ const Login = () => {
     } catch (error: any) {
       console.log(error.message);
     }
+    setLoading(false);
   };
 
   return (
@@ -135,7 +138,8 @@ const Login = () => {
                   )}
                 />
               </div>
-              <Button type="submit" className="w-full mt-1">
+              <Button type="submit" className="w-full mt-1" disabled={loading}>
+                {loading ? <Spinner className="text-background mx-2" /> : null}
                 Login
               </Button>
               <div className="relative">

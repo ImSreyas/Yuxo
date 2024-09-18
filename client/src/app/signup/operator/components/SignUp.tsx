@@ -22,9 +22,13 @@ import {
 import useAuth from "@/app/hooks/useAuth";
 import { Checkbox } from "@/components/ui/checkbox";
 import { OperatorFormSchema } from "@/schema/form";
+import TermsAndConditions from "../../components/TermsAndConditions";
+import { useState } from "react";
+import { Spinner } from "@/components/ui/spinner";
 
 const SignUp = () => {
-  const { operatorSignUp, loading, error: authError } = useAuth();
+  const [loading, setLoading] = useState<boolean>(false);
+  const { operatorSignUp, error: authError } = useAuth();
 
   const form = useForm<z.infer<typeof OperatorFormSchema>>({
     resolver: zodResolver(OperatorFormSchema),
@@ -42,11 +46,13 @@ const SignUp = () => {
 
   const onSubmit = async (data: z.infer<typeof OperatorFormSchema>) => {
     // console.log(data)
+    setLoading(true);
     const operator = await operatorSignUp(data);
+    setLoading(false);
   };
 
   return (
-    <div className="overflow-y-scroll grid justify-center py-16 lg:col-span-2 no-scrollbar">
+    <div className="lg:overflow-y-auto grid justify-center py-16 lg:col-span-2 relative">
       <div className="mx-auto grid w-[350px] gap-6">
         <div className="grid gap-2 text-center">
           <h1 className="text-3xl font-bold">Operator Sign Up</h1>
@@ -208,7 +214,8 @@ const SignUp = () => {
                   )}
                 />
               </div>
-              <Button type="submit" className="w-full mt-1">
+              <Button type="submit" className="w-full mt-1" disabled={loading}>
+                {loading ? <Spinner className="text-background mx-2" /> : null}
                 Sign Up
               </Button>
               {/* <div className="relative">
@@ -230,6 +237,7 @@ const SignUp = () => {
               Login
             </Link>
           </div>
+          <TermsAndConditions />
         </div>
       </div>
     </div>

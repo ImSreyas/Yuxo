@@ -1,10 +1,11 @@
-import Nav from "./components/Nav";
+import React from "react";
+import Nav from "../components/Nav";
 
 const page = () => {
   return (
     <>
       <Nav />
-      <div>This is the operator page</div>
+      <div>page</div>
     </>
   );
 };

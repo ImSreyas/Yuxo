@@ -20,6 +20,9 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import useAuth from "@/app/hooks/useAuth";
+import TermsAndConditions from "../../components/TermsAndConditions";
+import { Spinner } from "@/components/ui/spinner";
+import { useState } from "react";
 
 const FormSchema = z
   .object({
@@ -34,7 +37,8 @@ const FormSchema = z
 
 // Component
 const SignUp = () => {
-  const { userSignUp, loading, error: authError } = useAuth();
+  const [loading, setLoading] = useState<boolean>(false);
+  const { userSignUp, error: authError } = useAuth();
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -46,12 +50,14 @@ const SignUp = () => {
   });
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
+    setLoading(true);
     const user = await userSignUp(data.email, data.password);
+    setLoading(false);
     // console.log(user);
   };
 
   return (
-    <div className="flex items-center justify-center py-24 lg:col-span-2">
+    <div className="items-center lg:overflow-y-auto grid justify-center py-16 lg:col-span-2 relative">
       <div className="mx-auto grid w-[350px] gap-6">
         <div className="grid gap-2 text-center">
           <h1 className="text-3xl font-bold">Sign Up</h1>
@@ -125,7 +131,8 @@ const SignUp = () => {
                   />
                 </div>
               </div>
-              <Button type="submit" className="w-full mt-1">
+              <Button type="submit" className="w-full mt-1" disabled={loading}>
+                {loading ? <Spinner className="text-background mx-2" /> : null}
                 Sign Up
               </Button>
               <div className="relative">
@@ -153,6 +160,7 @@ const SignUp = () => {
               sign up
             </Link>
           </div>
+          <TermsAndConditions />
         </div>
       </div>
     </div>
