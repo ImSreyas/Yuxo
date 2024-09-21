@@ -7,7 +7,7 @@ const Nav = () => {
   const pathname = usePathname();
 
   return (
-    <div className="hidden sm:flex items-center justify-between py-4">
+    <div className="hidden sm:flex items-center justify-between py-4 sticky top-0 bg-background px-6 sm:px-8 md:px-10 lg:px-16 z-50">
       <div className="w-10 aspect-square"></div>
       <div className="flex font-bold">
         <Link
