@@ -14,13 +14,13 @@ const Search = ({className}: {className: string}) => {
   }
 
   return (
-    <form onSubmit={handleSearch} className={`h-12 relative w-full md:max-w-md xl:max-w-lg ${className}`}>
+    <form onSubmit={handleSearch} className={`relative w-full md:max-w-md xl:max-w-lg ${className}`}>
       <Input
         type="text"
         placeholder="Search..."
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
-        className="w-full pe-24 ps-6  rounded-full h-full"
+        className="w-full pe-24 ps-6 py-6 rounded-full"
       />
       <Button 
         type="submit" 

@@ -30,18 +30,26 @@ const SortButton = ({ className }: { className: string }) => {
     <div className={className}>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" className="w-content justify-between">
-            Sort by:{" "}
-            {sortOptions.find((option) => option.value === currentSort)?.label}
+          <Button
+            variant="outline"
+            className="w-content justify-between rounded-full p-6"
+          >
+            <span className="px-2 py-0 bg-foreground text-background rounded-md mr-3 text-[11px]">Sort by</span>
+            <span>
+              {
+                sortOptions.find((option) => option.value === currentSort)
+                  ?.label
+              }
+            </span>
             <ChevronDownIcon className="ml-2 h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-[200px]">
+        <DropdownMenuContent className="w-[200px] p-2">
           {sortOptions.map((option) => (
             <DropdownMenuItem
               key={option.value}
               onSelect={() => handleSort(option.value)}
-              className="cursor-pointer"
+              className="cursor-pointer px-3 py-2"
             >
               {option.label}
             </DropdownMenuItem>

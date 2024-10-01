@@ -214,7 +214,7 @@ const SignUp = () => {
                   )}
                 />
               </div>
-              <Button type="submit" className="w-full mt-1" disabled={loading}>
+              <Button type="submit" className="w-full mt-2" disabled={loading}>
                 {loading ? <Spinner className="text-background mx-2" /> : null}
                 Sign Up
               </Button>
