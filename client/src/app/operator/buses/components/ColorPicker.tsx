@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Check, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -25,7 +25,9 @@ const colors = [
 
 const ColorPicker = ({ setValue }: { setValue: any }) => {
   const [selectedColor, setSelectedColor] = useState(colors[0]);
-  setValue("color", colors[0].value);
+  useEffect(() => {
+    setValue("color", colors[0].value);
+  }, []);
   const [isOpen, setIsOpen] = useState(false);
   const handleColorPick = (color: (typeof colors)[0]) => {
     setSelectedColor(color);
