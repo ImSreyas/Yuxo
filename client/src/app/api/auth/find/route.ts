@@ -6,7 +6,7 @@ export async function POST(request: NextRequest) {
   const supabase = createClient();
   const { email } = await request.json();
 
-  //todo: validation
+  //todo: backend validation
 
   const { data: userData, error: userError } = await supabase
     .from("tbl_users")

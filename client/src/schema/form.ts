@@ -20,3 +20,12 @@ export const OperatorFormSchema = z
     message: "Passwords do not match.",
     path: ["confirm_password"],
   });
+
+export const BusFormSchema = z.object({
+  name: z.string().max(50, "Bus name cannot exceed 50 characters"),
+  type: z.string(),
+  reg: z.string().min(6, { message: "Must be at least 6 characters long" }),
+  color: z.string({ message: "Add a color" }),
+  is_ksrtc: z.boolean(),
+  bus_capacity: z.string(),
+});

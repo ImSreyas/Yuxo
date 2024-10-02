@@ -25,6 +25,7 @@ const colors = [
 
 const ColorPicker = ({ setValue }: { setValue: any }) => {
   const [selectedColor, setSelectedColor] = useState(colors[0]);
+  setValue("color", colors[0].value);
   const [isOpen, setIsOpen] = useState(false);
   const handleColorPick = (color: (typeof colors)[0]) => {
     setSelectedColor(color);

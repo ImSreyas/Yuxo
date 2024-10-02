@@ -32,15 +32,9 @@ import { Separator } from "@/components/ui/separator";
 import useWindowSize from "@/hooks/useWindowSize";
 import ColorPicker from "./ColorPicker";
 import { Checkbox } from "@/components/ui/checkbox";
-
-const FormSchema = z.object({
-  name: z.string().max(50, "Bus name cannot exceed 50 characters"),
-  type: z.string(),
-  reg: z.string().min(6, { message: "Must be at least 6 characters long" }),
-  color: z.string({ message: "Add a color" }),
-  is_ksrtc: z.boolean(),
-  bus_capacity: z.number(),
-});
+import axios from "axios";
+import useSWR from "swr";
+import { BusFormSchema as FormSchema } from "@/schema/form";
 
 const Component = ({
   state: [open, setOpen],
@@ -51,6 +45,9 @@ const Component = ({
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     console.log("Form submitted");
     setOpen(false);
+    console.log(data);
+    const response = await axios.put("/api/operator/bus/add", data);
+    console.log(response)
   };
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -201,7 +198,11 @@ const Component = ({
                         <FormItem className="w-full">
                           <FormControl>
                             <div className="py-1 ms-1 flex items-center">
-                              <Checkbox id="is-ksrtc" onChange={field.onChange} />
+                              <Checkbox
+                                id="is-ksrtc"
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                              />
                               <label htmlFor="is-ksrtc" className="px-2">
                                 KSRTC
                               </label>
