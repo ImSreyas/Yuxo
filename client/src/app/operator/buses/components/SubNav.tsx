@@ -10,6 +10,7 @@ import { useState } from "react";
 const SubNav = () => {
   const sortBtnPosChangeSize = 880;
   const { width } = useWindowSize(100);
+  const smallScreen = 640;
   const sideBarState = useState(false);
   const [sideBar, setSideBar] = sideBarState;
 
@@ -24,7 +25,7 @@ const SubNav = () => {
           <SortButton className="col-span-1 justify-self-start" />
         )}
         <Button onClick={() => setSideBar(true)} className="p-6 rounded-full">
-          Add new Bus
+          {width < smallScreen ? "Add Bus" : "Add new Bus"}
         </Button>
         <AddBus state={sideBarState} />
       </div>

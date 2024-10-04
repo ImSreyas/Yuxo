@@ -47,18 +47,12 @@ const Component = ({
     setOpen(false);
     console.log(data);
     const response = await axios.put("/api/operator/bus/add", data);
-    console.log(response)
+    console.log(response);
   };
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
-    defaultValues: {
-      name: "",
-      type: "",
-      reg: "",
-      color: "",
-      is_ksrtc: false,
-    },
+    defaultValues: {},
   });
 
   const { setValue } = form;
@@ -181,38 +175,6 @@ const Component = ({
                               type="number"
                               {...field}
                             />
-                          </FormControl>
-                          <FormDescription></FormDescription>
-                          <FormMessage></FormMessage>
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </div>
-                <div className="grid gap-2">
-                  <div className="flex items-center">
-                    <FormField
-                      control={form.control}
-                      name="is_ksrtc"
-                      render={({ field }) => (
-                        <FormItem className="w-full">
-                          <FormControl>
-                            <div className="py-1 ms-1 flex items-center">
-                              <Checkbox
-                                id="is-ksrtc"
-                                checked={field.value}
-                                onCheckedChange={field.onChange}
-                              />
-                              <label htmlFor="is-ksrtc" className="px-2">
-                                KSRTC
-                              </label>
-                            </div>
-                            {/* <Input
-                              id="bus-capacity"
-                              placeholder="40"
-                              type="number"
-                              {...field}
-                            /> */}
                           </FormControl>
                           <FormDescription></FormDescription>
                           <FormMessage></FormMessage>

@@ -7,7 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDownIcon } from "lucide-react";
+import { ArrowDownAZ, ArrowDownWideNarrow, ChevronDownIcon } from "lucide-react";
 import { useState } from "react";
 
 type SortOption = "alphabetical" | "schedule" | "number";
@@ -34,8 +34,9 @@ const SortButton = ({ className }: { className: string }) => {
             variant="outline"
             className="w-content justify-between rounded-full p-6"
           >
-            <span className="px-2 py-0 bg-foreground text-background rounded-md mr-3 text-[11px]">Sort by</span>
-            <span>
+            <ArrowDownWideNarrow className="w-4 h-4"/>
+            {/* <ArrowDownAZ className="w-5 h-5" /> */}
+            <span className="ps-2 font-semibold">
               {
                 sortOptions.find((option) => option.value === currentSort)
                   ?.label

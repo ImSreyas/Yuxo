@@ -26,6 +26,5 @@ export const BusFormSchema = z.object({
   type: z.string(),
   reg: z.string().min(6, { message: "Must be at least 6 characters long" }),
   color: z.string({ message: "Add a color" }),
-  is_ksrtc: z.boolean(),
   bus_capacity: z.string(),
 });

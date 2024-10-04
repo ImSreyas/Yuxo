@@ -7,7 +7,7 @@ export async function PUT(req: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  const { name, type, color, reg, is_ksrtc, bus_capacity }: BusForm =
+  const { name, type, color, reg, bus_capacity }: BusForm =
     await req.json();
 
   if (user) {
@@ -20,7 +20,7 @@ export async function PUT(req: NextRequest) {
         registration_number: reg,
         bus_name: name,
         operator_id: userId,
-        is_ksrtc: is_ksrtc,
+        is_ksrtc: true, //todo: remove this field from the db
         bus_color: color,
         bus_capacity: bus_capacity,
       })

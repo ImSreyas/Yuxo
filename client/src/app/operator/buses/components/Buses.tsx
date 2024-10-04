@@ -12,15 +12,15 @@ const Buses = () => {
         data: { response },
       } = await axios.post("/api/operator/bus/get");
       setBusData(response);
-      console.log(response);
+      console.log(response)
     };
     getBusData();
   }, []);
 
   return (
     <div className="grid gap-5 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
-      {busesData.map((busData) => (
-        <Card busData={busData} />
+      {busesData.map((busData: any) => (
+        <Card key={busData.bus_name} busData={busData} />
       ))}
     </div>
   );
