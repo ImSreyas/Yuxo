@@ -1,11 +1,9 @@
 import Image from "next/image"
 import Login from "./components/Login"
-import LoginCover from "./components/LoginCover"
 
 export default function page() {
   return (
-    <div className="w-full lg:grid lg:grid-cols-5 min-h-screen">
-      <LoginCover />
+    <div className="w-full flex justify-center items-center min-h-screen">
       <Login />
     </div>
   )
