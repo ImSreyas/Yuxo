@@ -17,9 +17,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Separator } from "@/components/ui/separator";
-import useAuth from "@/app/hooks/useAuth";
 import { useState } from "react";
-import { type authCheckResponse } from "@/lib/types/auth";
 import { Spinner } from "@/components/ui/spinner";
 import { useRouter } from "next/navigation";
 
@@ -41,12 +39,10 @@ const Login = () => {
     emailErr: null,
     passwordErr: null,
   });
-  const { login } = useAuth();
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      email: "",
       password: "",
     },
   });
@@ -66,7 +62,7 @@ const Login = () => {
           setLoginErr({ emailErr: null, passwordErr: "Invalid password" });
         }
       } else {
-        setLoginErr({ emailErr: "Email does not exist", passwordErr: null });
+        setLoginErr({ emailErr: "User not found", passwordErr: null });
       }
     } catch (e) {
       console.log(e);
