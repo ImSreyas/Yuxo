@@ -4,18 +4,22 @@ import { useEffect, useState } from "react";
 import Card from "./BusCard";
 import axios from "axios";
 
-const Buses = () => {
+const Buses = ({ status: [busStatus, setBusStatus] }: any) => {
   const [busesData, setBusData] = useState([]);
+
   useEffect(() => {
     const getBusData = async () => {
+      setBusStatus(false);
       const {
         data: { response },
       } = await axios.post("/api/operator/bus/get");
       setBusData(response);
-      console.log(response)
+      console.log(response);
     };
-    getBusData();
-  }, []);
+    if (busStatus) {
+      getBusData();
+    }
+  }, [busStatus, setBusStatus]);
 
   return (
     <div className="grid gap-5 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">

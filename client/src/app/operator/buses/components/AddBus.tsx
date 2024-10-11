@@ -38,12 +38,14 @@ import { BusFormSchema as FormSchema } from "@/schema/form";
 
 const Component = ({
   state: [open, setOpen],
+  status: [busStatus, setBusStatus],
 }: {
-  state: [boolean, (_: boolean) => void];
+  state: [boolean, (_: boolean) => void],
+  status: any
 }) => {
   const [loading, setLoading] = useState(false);
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
-    console.log("Form submitted");
+    setBusStatus(true)
     setOpen(false);
     console.log(data);
     const response = await axios.put("/api/operator/bus/add", data);

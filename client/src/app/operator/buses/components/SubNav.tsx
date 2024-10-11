@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import AddBus from "./AddBus";
 import { useState } from "react";
 
-const SubNav = () => {
+const SubNav = ({status}: any) => {
   const sortBtnPosChangeSize = 880;
   const { width } = useWindowSize(100);
   const smallScreen = 640;
@@ -27,7 +27,7 @@ const SubNav = () => {
         <Button onClick={() => setSideBar(true)} className="p-6 rounded-full">
           {width < smallScreen ? "Add Bus" : "Add new Bus"}
         </Button>
-        <AddBus state={sideBarState} />
+        <AddBus state={sideBarState} status={status} />
       </div>
     </div>
   );

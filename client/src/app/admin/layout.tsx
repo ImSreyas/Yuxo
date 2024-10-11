@@ -164,7 +164,7 @@ export default function AdminLayout({
           </Link>
         </div>
       </aside>
-      <main className="flex-1 overflow-y-auto p-8">{children}</main>
+      <main className="flex-1 overflow-y-auto px-12 py-6">{children}</main>
     </div>
   );
 }
