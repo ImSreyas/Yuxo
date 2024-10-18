@@ -42,14 +42,15 @@ import {
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-export type User = {
+export type Operator = {
   user_id: string;
   name: string | null;
+  isKsrtcOperator: boolean;
   status?: "pending" | "processing" | "success" | "failed";
   email: string;
 };
 
-export const columns: ColumnDef<User>[] = [
+export const columns: ColumnDef<Operator>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -93,6 +94,13 @@ export const columns: ColumnDef<User>[] = [
       );
     },
     cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
+  },
+  {
+    accessorKey: "isKsrtc",
+    header: "Is KSRTC",
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("is_ksrtc") || false}</div>
+    ),
   },
   // Status column
   {
@@ -146,17 +154,17 @@ export default function DataTableDemo() {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-  const [data, setData] = useState<User[]>([]);
+  const [data, setData] = useState<Operator[]>([]);
   console.log(data)
 
   useEffect(() => {
-    const getUser = async () => {
+    const getOperator = async () => {
       const { data } = await axios.post("/api/user/get");
       if (data.success) {
         setData(data.response);
       }
     };
-    getUser();
+    getOperator();
   }, []);
 
   const table = useReactTable({

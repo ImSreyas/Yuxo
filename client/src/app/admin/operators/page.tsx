@@ -1,6 +1,10 @@
+import Table from "./components/Table"
+
 const page = () => {
   return (
-    <div>This is the operators page</div>
+    <div>
+      <Table />
+    </div>
   )
 }
 
