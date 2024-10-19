@@ -18,6 +18,7 @@ import {
   HelpCircle,
   LogOut,
 } from "lucide-react";
+import LogoutButton from "./components/LogoutButton";
 
 interface NavItem {
   title: string;
@@ -33,6 +34,8 @@ export default function AdminLayout({
   const [isExpanded, setIsExpanded] = useState(false);
   const pathname = usePathname();
 
+  const handleLogout = () => {};
+
   const navItems: NavItem[] = [
     {
       title: "Users",
@@ -47,27 +50,27 @@ export default function AdminLayout({
     { title: "Buses", icon: <Bus className="h-4 w-4" />, href: "/admin/buses" },
     {
       title: "Bus Stops",
-      icon: <MapPin className="h-4 w-4" strokeWidth={2.5}/>,
+      icon: <MapPin className="h-4 w-4" strokeWidth={2.5} />,
       href: "/admin/stops",
     },
     {
       title: "Routes",
-      icon: <Route className="h-4 w-4" strokeWidth={2.5}/>,
+      icon: <Route className="h-4 w-4" strokeWidth={2.5} />,
       href: "/admin/routes",
     },
     {
       title: "Schedules",
-      icon: <Calendar className="h-4 w-4" strokeWidth={2.5}/>,
+      icon: <Calendar className="h-4 w-4" strokeWidth={2.5} />,
       href: "/admin/schedules",
     },
     {
       title: "Analytics",
-      icon: <BarChart3 className="h-4 w-4" strokeWidth={2.5}/>,
+      icon: <BarChart3 className="h-4 w-4" strokeWidth={2.5} />,
       href: "/admin/analytics",
     },
     {
       title: "Settings",
-      icon: <Settings className="h-4 w-4" strokeWidth={2.5}/>,
+      icon: <Settings className="h-4 w-4" strokeWidth={2.5} />,
       href: "/admin/settings",
     },
   ];
@@ -95,74 +98,64 @@ export default function AdminLayout({
           </span>
         </div>
         <ScrollArea className="h-[calc(100vh-4rem)]">
-          <nav className="space-y-1 p-2">
-            {navItems.map((item) => (
-              <Link key={item.href} href={item.href} passHref>
+          <nav className="p-2 h-full flex flex-col justify-between">
+            <div>
+              {navItems.map((item) => (
+                <Link key={item.href} href={item.href} passHref>
+                  <Button
+                    variant="ghost"
+                    className={cn("w-60 justify-start px-2 mb-1")}
+                  >
+                    <span
+                      className={cn(
+                        "p-2",
+                        pathname == item.href &&
+                          "text-background bg-foreground rounded-lg"
+                      )}
+                    >
+                      {item.icon}
+                    </span>
+                    <span
+                      className={cn(
+                        "ml-3 transition-opacity duration-300 font-semibold",
+                        isExpanded ? "opacity-100 block" : "opacity-0 relative"
+                      )}
+                    >
+                      {item.title}
+                    </span>
+                  </Button>
+                </Link>
+              ))}
+            </div>
+            <div className="mb-2">
+              <Link href="/admin/help" passHref>
                 <Button
                   variant="ghost"
-                  className={cn("w-60 justify-start px-2 mb-1")}
+                  className="w-60 justify-start px-2 mb-1"
                 >
                   <span
                     className={cn(
                       "p-2",
-                      pathname == item.href &&
+                      pathname == "/admin/help" &&
                         "text-background bg-foreground rounded-lg"
                     )}
                   >
-                    {item.icon}
+                    <HelpCircle className="h-4 w-4" strokeWidth={2.5} />
                   </span>
                   <span
                     className={cn(
-                      "ml-3 transition-opacity duration-300 font-semibold",
-                      isExpanded ? "opacity-100 block" : "opacity-0 relative"
+                      "ml-4 transition-opacity duration-300",
+                      isExpanded ? "opacity-100" : "opacity-0"
                     )}
                   >
-                    {item.title}
+                    Help
                   </span>
                 </Button>
               </Link>
-            ))}
+              <LogoutButton expandState={[isExpanded, setIsExpanded]} />
+            </div>
           </nav>
         </ScrollArea>
-        <div className="absolute bottom-4 left-0 right-0 p-2">
-          <Link href="/admin/help" passHref>
-            <Button variant="ghost" className="w-60 justify-start px-2">
-              <span
-                className={cn(
-                  "p-2",
-                  pathname == "/admin/help" &&
-                    "text-background bg-foreground rounded-lg"
-                )}
-              >
-                <HelpCircle className="h-4 w-4" strokeWidth={2.5} />
-              </span>
-              <span
-                className={cn(
-                  "ml-4 transition-opacity duration-300",
-                  isExpanded ? "opacity-100" : "opacity-0"
-                )}
-              >
-                Help
-              </span>
-            </Button>
-          </Link>
-          <Link href="/logout" passHref>
-            <Button
-              variant="ghost"
-              className="w-60 justify-start text-destructive hover:text-destructive"
-            >
-              <LogOut className="h-4 w-4" strokeWidth={2.5} />
-              <span
-                className={cn(
-                  "ml-4 transition-opacity duration-300",
-                  isExpanded ? "opacity-100" : "opacity-0"
-                )}
-              >
-                Logout
-              </span>
-            </Button>
-          </Link>
-        </div>
       </aside>
       <main className="flex-1 overflow-y-auto px-12 py-6">{children}</main>
     </div>

@@ -1,7 +1,12 @@
 import App from "./users/App";
 
 const page = () => {
-  return <App />;
+  return (
+    <main>
+      <div className="text-2xl font-extrabold">users</div>
+      <App />
+    </main>
+  );
 };
 
 export default page;

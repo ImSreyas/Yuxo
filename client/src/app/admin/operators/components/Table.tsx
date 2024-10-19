@@ -45,9 +45,12 @@ import axios from "axios";
 export type Operator = {
   user_id: string;
   name: string | null;
+  email: string;
+  phone: string;
+  place: string;
+  permit_no: string;
   isKsrtcOperator: boolean;
   status?: "pending" | "processing" | "success" | "failed";
-  email: string;
 };
 
 export const columns: ColumnDef<Operator>[] = [
@@ -76,7 +79,17 @@ export const columns: ColumnDef<Operator>[] = [
   // New name column
   {
     accessorKey: "name",
-    header: "Name",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Name
+          <CaretSortIcon className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
     cell: ({ row }) => <div>{row.getValue("name") || "Unknown"}</div>,
   },
   // Email column
@@ -95,11 +108,60 @@ export const columns: ColumnDef<Operator>[] = [
     },
     cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
   },
+  //  Phone column
+  {
+    accessorKey: "phone",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Phone
+          <CaretSortIcon className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => <div className="lowercase">{row.getValue("phone")}</div>,
+  },
+  // Place column
+  {
+    accessorKey: "place",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Place
+          <CaretSortIcon className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => <div className="lowercase">{row.getValue("place")}</div>,
+  },
+  // Permit number column
+  {
+    accessorKey: "permit_no",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Permit number
+          <CaretSortIcon className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => <div className="lowercase">{row.getValue("permit_no")}</div>,
+  },
+  // Is KSRTC column
   {
     accessorKey: "isKsrtc",
-    header: "Is KSRTC",
+    header: "KSRTC operator",
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("is_ksrtc") || false}</div>
+      <div className="capitalize">{row.getValue("is_ksrtc") ? "Yes" : "No"}</div>
     ),
   },
   // Status column
@@ -138,7 +200,9 @@ export const columns: ColumnDef<Operator>[] = [
             <DropdownMenuSeparator />
             <DropdownMenuItem>View user</DropdownMenuItem>
             <DropdownMenuItem>Edit user</DropdownMenuItem>
-            <DropdownMenuItem className="text-destructive focus:text-destructive">Delete user</DropdownMenuItem>
+            <DropdownMenuItem className="text-destructive focus:text-destructive">
+              Delete user
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
@@ -155,11 +219,11 @@ export default function DataTableDemo() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
   const [data, setData] = useState<Operator[]>([]);
-  console.log(data)
+  console.log(data);
 
   useEffect(() => {
     const getOperator = async () => {
-      const { data } = await axios.post("/api/user/get");
+      const { data } = await axios.post("/api/operator/get");
       if (data.success) {
         setData(data.response);
       }

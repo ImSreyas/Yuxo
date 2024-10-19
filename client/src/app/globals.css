@@ -20,12 +20,22 @@
   }
 }
 
+@font-face {
+  font-family: 'uber';
+  src: url('/fonts/UberMoveMedium.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 body {
   font-family: "Manrope", sans-serif;
   /* font-family: "Poppins", sans-serif; */
+  /* font-family: 'uber', sans-serif; */
   font-weight: 600;
   min-height: 100dvh;
 }
+
+
 
 @layer utilities {
   .text-balance {
