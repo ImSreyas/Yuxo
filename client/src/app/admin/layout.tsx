@@ -110,7 +110,7 @@ export default function AdminLayout({
                       className={cn(
                         "p-2",
                         pathname == item.href &&
-                          "text-background bg-foreground rounded-lg"
+                          "text-background bg-foreground rounded-xl"
                       )}
                     >
                       {item.icon}
