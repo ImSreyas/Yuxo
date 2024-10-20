@@ -6,7 +6,7 @@ import { Bus, FileText, Hash, Palette, Users } from "lucide-react";
 const BusCard = ({ busData: bus }: { busData: any }) => {
 
   return (
-    <Card className="w-full max-w-md mx-auto rounded-xl overflow-hidden">
+    <Card className="w-full mx-auto rounded-xl overflow-hidden hover:cursor-pointer">
       <div className="flex justify-between pt-6 pb-5 px-8 text-xl">
         <div className="font-bold">{bus.bus_name}</div>
         <div className="font-bold">{bus.bus_id}</div>

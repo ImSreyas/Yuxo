@@ -10,7 +10,8 @@ const page = () => {
 
   return (
     <>
-      <div className="pt-4 pb-8 px-6 sm:px-8 md:px-10 lg:px-16">
+      <div className="pt-2 pb-8 px-2 sm:px-4 md:px-8 lg:px-12">
+        <div className="text-2xl font-extrabold mb-4">buses</div>
         <SubNav status={[busStatus, setBusStatus]} />
         <Buses status={[busStatus, setBusStatus]} />
       </div>
