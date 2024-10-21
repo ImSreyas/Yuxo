@@ -57,7 +57,7 @@ const ColorPicker = ({ setValue }: { setValue: any }) => {
           <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-full p-0" align="end">
+      <PopoverContent className="w-full p-0 pointer-events-auto" align="end">
         <div className="py-4 px-6 bg-background rounded-lg shadow-lg">
           <h2 className="text-lg font-semibold mb-3 text-foreground">
             Select Bus Color

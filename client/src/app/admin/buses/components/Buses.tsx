@@ -19,7 +19,8 @@ const Buses = ({ status: [busStatus, setBusStatus] }: any) => {
     if (busStatus) {
       getBusData();
     }
-  }, [busStatus, setBusStatus]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [busStatus]);
 
   return (
     <div className="grid gap-5 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">

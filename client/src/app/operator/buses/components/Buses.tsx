@@ -19,12 +19,12 @@ const Buses = ({ status: [busStatus, setBusStatus] }: any) => {
     if (busStatus) {
       getBusData();
     }
-  }, [busStatus, setBusStatus]);
+  }, [busStatus]);
 
   return (
     <div className="grid gap-5 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
       {busesData.map((busData: any) => (
-        <Card key={busData.bus_name} busData={busData} />
+        <Card key={busData.bus_id} busData={busData} />
       ))}
     </div>
   );
