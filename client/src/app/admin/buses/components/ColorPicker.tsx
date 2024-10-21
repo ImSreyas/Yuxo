@@ -27,6 +27,7 @@ const ColorPicker = ({ setValue }: { setValue: any }) => {
   const [selectedColor, setSelectedColor] = useState(colors[0]);
   useEffect(() => {
     setValue("color", colors[0].value);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const [isOpen, setIsOpen] = useState(false);
   const handleColorPick = (color: (typeof colors)[0]) => {

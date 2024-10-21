@@ -3,8 +3,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Sheet,
   SheetContent,
@@ -27,34 +25,31 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronDown, PanelRightClose } from "lucide-react";
 import { z } from "zod";
 import { FormProvider, useForm } from "react-hook-form";
-import { Spinner } from "@/components/ui/spinner";
-import { Separator } from "@/components/ui/separator";
 import useWindowSize from "@/hooks/useWindowSize";
 import ColorPicker from "./ColorPicker";
-import { Checkbox } from "@/components/ui/checkbox";
 import axios from "axios";
-import useSWR from "swr";
 import { BusFormSchema as FormSchema } from "@/schema/form";
+import useNewBusAddedStore from "@/store/useNewBusAddedStore";
 
 const Component = ({
   state: [open, setOpen],
-  status: [busStatus, setBusStatus],
 }: {
-  state: [boolean, (_: boolean) => void],
-  status: any
+  state: [boolean, (_: boolean) => void];
 }) => {
-  const [loading, setLoading] = useState(false);
+  const { setBusAdded }: any = useNewBusAddedStore();
+
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
-    setBusStatus(true)
+    setBusAdded(true);
     setOpen(false);
-    console.log(data);
-    const response = await axios.put("/api/operator/bus/add", data);
-    console.log(response);
+    try {
+      await axios.put("/api/operator/bus/add", data);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
-    defaultValues: {},
   });
 
   const { setValue } = form;
