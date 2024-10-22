@@ -43,13 +43,13 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 
 export type Operator = {
-  user_id: string;
+  operator_id: string;
   name: string | null;
   email: string;
   phone: string;
   place: string;
   permit_no: string;
-  isKsrtcOperator: boolean;
+  is_ksrtc_operator: boolean;
   status?: "pending" | "processing" | "success" | "failed";
 };
 
@@ -154,14 +154,18 @@ export const columns: ColumnDef<Operator>[] = [
         </Button>
       );
     },
-    cell: ({ row }) => <div className="lowercase">{row.getValue("permit_no")}</div>,
+    cell: ({ row }) => (
+      <div className="lowercase">{row.getValue("permit_no")}</div>
+    ),
   },
   // Is KSRTC column
   {
-    accessorKey: "isKsrtc",
+    accessorKey: "is_ksrtc_operator",
     header: "KSRTC operator",
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("is_ksrtc") ? "Yes" : "No"}</div>
+      <div className="capitalize">
+        {row.getValue("is_ksrtc_operator") ? "Yes" : "No"}
+      </div>
     ),
   },
   // Status column
@@ -193,14 +197,21 @@ export const columns: ColumnDef<Operator>[] = [
               Actions
             </DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(user.user_id)}
+              onClick={() => navigator.clipboard.writeText(user.operator_id)}
+              className="cursor-pointer"
             >
               Copy user ID
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View user</DropdownMenuItem>
-            <DropdownMenuItem>Edit user</DropdownMenuItem>
-            <DropdownMenuItem className="text-destructive focus:text-destructive">
+            {/* <DropdownMenuSeparator /> */}
+            {/* todo: separator */}
+            <div className="mx-2 py-1 border-t border-muted"></div>
+            <DropdownMenuItem className="cursor-pointer">
+              View user
+            </DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer">
+              Edit user
+            </DropdownMenuItem>
+            <DropdownMenuItem className="text-destructive focus:text-destructive cursor-pointer">
               Delete user
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -219,7 +230,6 @@ export default function DataTableDemo() {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
   const [data, setData] = useState<Operator[]>([]);
-  console.log(data);
 
   useEffect(() => {
     const getOperator = async () => {

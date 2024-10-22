@@ -34,21 +34,21 @@ import ColorPicker from "./ColorPicker";
 import { Checkbox } from "@/components/ui/checkbox";
 import axios from "axios";
 import useSWR from "swr";
-import { BusFormSchema as FormSchema } from "@/schema/form";
+import { AdminBusFormSchema as FormSchema } from "@/schema/form";
 
 const Component = ({
   state: [open, setOpen],
   status: [busStatus, setBusStatus],
 }: {
-  state: [boolean, (_: boolean) => void],
-  status: any
+  state: [boolean, (_: boolean) => void];
+  status: any;
 }) => {
   const [loading, setLoading] = useState(false);
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
-    setBusStatus(true)
+    setBusStatus(true);
     setOpen(false);
     console.log(data);
-    const response = await axios.put("/api/operator/bus/add", data);
+    const response = await axios.put("/api/admin/bus/add", data);
     console.log(response);
   };
 
@@ -76,6 +76,29 @@ const Component = ({
           </SheetHeader>
           <FormProvider {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="mt-6">
+              <div className="grid gap-2">
+                <div className="flex items-center">
+                  <FormField
+                    control={form.control}
+                    name="operator_id"
+                    render={({ field }) => (
+                      <FormItem className="w-full">
+                        <FormLabel>Operator ID</FormLabel>
+                        <FormControl>
+                          <Input
+                            id="type"
+                            placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                            type="text"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormDescription></FormDescription>
+                        <FormMessage></FormMessage>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
               <div className="grid gap-2">
                 <div className="grid gap-2">
                   <FormField

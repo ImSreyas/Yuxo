@@ -28,3 +28,12 @@ export const BusFormSchema = z.object({
   color: z.string({ message: "Add a color" }),
   bus_capacity: z.string(),
 });
+
+export const AdminBusFormSchema = z.object({
+  operator_id: z.string().length(36, "Operator id should be 36 characters long"),
+  name: z.string().max(50, "Bus name cannot exceed 50 characters"),
+  type: z.string(),
+  reg: z.string().min(6, { message: "Must be at least 6 characters long" }),
+  color: z.string({ message: "Add a color" }),
+  bus_capacity: z.string(),
+});
