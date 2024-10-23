@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "Yuxo",
@@ -13,9 +14,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    
     <html lang="en">
-      <body className="">{children}</body>
+      <body className="">
+        <Toaster className="pointer-events-auto" />
+        {children}
+      </body>
     </html>
   );
 }

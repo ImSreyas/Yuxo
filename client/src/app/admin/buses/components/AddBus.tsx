@@ -3,15 +3,13 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
 import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
 } from "@/components/ui/sheet";
 
 import {
@@ -27,29 +25,74 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronDown, PanelRightClose } from "lucide-react";
 import { z } from "zod";
 import { FormProvider, useForm } from "react-hook-form";
-import { Spinner } from "@/components/ui/spinner";
-import { Separator } from "@/components/ui/separator";
 import useWindowSize from "@/hooks/useWindowSize";
 import ColorPicker from "./ColorPicker";
-import { Checkbox } from "@/components/ui/checkbox";
 import axios from "axios";
-import useSWR from "swr";
 import { AdminBusFormSchema as FormSchema } from "@/schema/form";
+import useNewBusAddedStore from "@/store/useNewBusAddedStore";
 
 const Component = ({
   state: [open, setOpen],
-  status: [busStatus, setBusStatus],
 }: {
   state: [boolean, (_: boolean) => void];
-  status: any;
 }) => {
   const [loading, setLoading] = useState(false);
+  const [isOperatorIdNotValid, setIsOperatorIdNotValid] = useState(false);
+  const { setBusAdded }: any = useNewBusAddedStore();
+
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
-    setBusStatus(true);
-    setOpen(false);
-    console.log(data);
-    const response = await axios.put("/api/admin/bus/add", data);
-    console.log(response);
+    try {
+      const { data: operatorData } = await axios.post(
+        "/api/admin/operator/search",
+        { operator_id: data.operator_id }
+      );
+      if (operatorData?.success) {
+        // console.log(data);
+        const { data: responseData } = await axios.put(
+          "/api/admin/bus/add",
+          data
+        );
+        if (responseData?.success) {
+          setBusAdded(true);
+          setOpen(false);
+          toast("Successful", {
+            description: "New bus added successfully",
+            action: {
+              label: "Close",
+            },
+            position: "top-center",
+            duration: 6000,
+          });
+        } else {
+          toast("Something went wrong", {
+            description: "Please check your internet connection",
+            action: {
+              label: "Close",
+            },
+            position: "top-center",
+          });
+        }
+      } else {
+        setIsOperatorIdNotValid(true);
+
+        toast("Invalid operator ID", {
+          description: "Please enter a valid operator ID",
+          action: {
+            label: "Close",
+          },
+          position: "top-center",
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      toast("Something went wrong", {
+        description: "Check your internet connection",
+        action: {
+          label: "Close",
+        },
+        position: "top-center",
+      });
+    }
   };
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -65,9 +108,9 @@ const Component = ({
   return (
     <div className="">
       <Sheet open={open} onOpenChange={setOpen}>
-        <SheetTrigger asChild></SheetTrigger>
         <SheetContent
           side={width < smallScreen ? "bottom" : "right"}
+          onPointerDownOutside={(e) => e.preventDefault()}
           className="w-full h-[90%] sm:h-full py-16 px-12 md:max-w-md lg:max-w-lg lg:px-14 overflow-y-scroll"
         >
           <SheetHeader>
@@ -77,7 +120,7 @@ const Component = ({
           <FormProvider {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="mt-6">
               <div className="grid gap-2">
-                <div className="flex items-center">
+                <div className="grid gap-2">
                   <FormField
                     control={form.control}
                     name="operator_id"
@@ -93,13 +136,13 @@ const Component = ({
                           />
                         </FormControl>
                         <FormDescription></FormDescription>
-                        <FormMessage></FormMessage>
+                        <FormMessage>
+                          {isOperatorIdNotValid && "Invalid operator ID"}
+                        </FormMessage>
                       </FormItem>
                     )}
                   />
                 </div>
-              </div>
-              <div className="grid gap-2">
                 <div className="grid gap-2">
                   <FormField
                     control={form.control}

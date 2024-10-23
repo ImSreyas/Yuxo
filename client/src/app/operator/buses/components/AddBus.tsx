@@ -11,6 +11,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { toast } from "sonner";
 
 import {
   Form,
@@ -42,9 +43,39 @@ const Component = ({
     setBusAdded(true);
     setOpen(false);
     try {
-      await axios.put("/api/operator/bus/add", data);
-    } catch (err) {
-      console.log(err);
+      const { data: responseData } = await axios.put(
+        "/api/operator/bus/add",
+        data
+      );
+      if (responseData?.success) {
+        setBusAdded(true);
+        setOpen(false);
+        toast("Successful", {
+          description: "New bus added successfully",
+          action: {
+            label: "Close",
+          },
+          position: "top-center",
+          duration: 6000,
+        });
+      } else {
+        toast("Something went wrong", {
+          description: "Please check your internet connection",
+          action: {
+            label: "Close",
+          },
+          position: "top-center",
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      toast("Something went wrong", {
+        description: "Please check your internet connection",
+        action: {
+          label: "Close",
+        },
+        position: "top-center",
+      });
     }
   };
 
