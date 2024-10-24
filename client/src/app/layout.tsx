@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
+import SideBar from "./components/SideBar";
 
 export const metadata: Metadata = {
   title: "Yuxo",
@@ -17,7 +17,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="">
         <Toaster className="pointer-events-auto" />
-        {children}
+        <SideBar children={children} />
       </body>
     </html>
   );

@@ -71,7 +71,7 @@ const Login = () => {
   };
 
   return (
-    <div className="flex items-center justify-center sm:px-20 sm:py-14 rounded-xl sm:border w-[78%] sm:w-fit">
+    <div className="flex items-center bg-background justify-center sm:px-20 sm:py-14 rounded-xl sm:border w-[78%] sm:w-fit absolute sm:shadow-xl">
       <div className="mx-auto grid gap-6 w-full sm:w-[350px]">
         <div className="grid gap-2 text-center">
           <h1 className="text-3xl font-bold">Admin Login</h1>

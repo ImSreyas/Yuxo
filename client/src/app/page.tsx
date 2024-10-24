@@ -1,18 +1,12 @@
-import Image from "next/image";
+import Map from "./components/Map";
+import "mapbox-gl/dist/mapbox-gl.css"; // Import the Mapbox CSS globally
+
+// const Map = dynamic(() => import('./Map'), { ssr: false });
 
 export default function Home() {
   return (
-    <main className="px-16 py-8">
-      <nav className="flex justify-between items-center">
-        <div>
-          <input type="" />
-        </div>
-        <div>
-          <input type="text" />
-        </div>
-      </nav>
-      <div className="text-base">
-      </div>
-    </main>
+    <div style={{ width: "100%", height: "100vh" }}>
+      <Map />
+    </div>
   );
 }
