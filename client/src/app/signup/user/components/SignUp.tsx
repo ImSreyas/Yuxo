@@ -58,7 +58,7 @@ const SignUp = () => {
 
   return (
     <div className="items-center lg:overflow-y-auto grid justify-center py-16 lg:col-span-2 relative">
-      <div className="mx-auto grid w-[350px] gap-6">
+      <div className="mx-auto grid w-[300px] sm:w-[350px] lg:w-[300px] xl:w-[350px] gap-6">
         <div className="grid gap-2 text-center">
           <h1 className="text-3xl font-bold">Sign Up</h1>
           <p className="text-balance text-muted-foreground text-sm">

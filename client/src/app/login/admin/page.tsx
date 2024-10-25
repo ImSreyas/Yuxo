@@ -1,15 +1,9 @@
-"use client";
-
-import Image from "next/image";
 import Login from "./components/Login";
 import Map from "./components/Map";
-import useWindowSize from "@/hooks/useWindowSize";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
 export default function page() {
-  const { width } = useWindowSize();
-  const responsiveSize = 640;
 
   return (
     <div className="w-full bg-background flex justify-center items-center min-h-screen relative">
@@ -20,7 +14,7 @@ export default function page() {
         <ArrowLeft className="w-4 h-4" strokeWidth={2.5} />
         <span className="hidden lg:block">Back to Home</span>
       </Link>
-      {width >= responsiveSize && <Map />}
+      <Map />
       <Login />
     </div>
   );

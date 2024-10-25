@@ -3,12 +3,15 @@
 import { useRef, useEffect } from "react";
 import mapboxgl, { Map as MapboxMap } from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
+import useWindowSize from "@/hooks/useWindowSize";
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN!;
 
 const Map = () => {
   const mapRef = useRef<MapboxMap | null>(null);
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
+  const { width } = useWindowSize();
+  const responsiveSize = 640;
 
   useEffect(() => {
     if (!mapContainerRef.current) return;
@@ -28,8 +31,14 @@ const Map = () => {
     };
   }, []);
 
-  return (
-    <div id="map-container" ref={mapContainerRef} className="w-screen h-screen absolute inset-0" />
+  return width >= responsiveSize ? (
+    <div
+      id="map-container"
+      ref={mapContainerRef}
+      className="w-screen h-screen absolute inset-0"
+    />
+  ) : (
+    <></>
   );
 };
 
