@@ -33,7 +33,7 @@ const Map = () => {
   }, []);
 
   return (
-    <div id="map-container" ref={mapContainerRef} className="w-full h-full" />
+    <div id="map-container" ref={mapContainerRef} className="w-screen h-screen" />
   );
 };
 
