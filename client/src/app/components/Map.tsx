@@ -21,9 +21,8 @@ const Map = () => {
       projection: "mercator",
     });
 
-    const marker = new mapboxgl.Marker({color: "#F00"})
-      .setLngLat([77.191492, 28.613945]) 
-      .addTo(mapRef.current); 
+    const marker = new mapboxgl.Marker({ color: "#F00" });
+    marker.setLngLat([77.191492, 28.613945]).addTo(mapRef.current);
 
     return () => {
       if (mapRef.current) {
@@ -33,7 +32,11 @@ const Map = () => {
   }, []);
 
   return (
-    <div id="map-container" ref={mapContainerRef} className="w-[100vw-4rem] h-screen" />
+    <div
+      id="map-container"
+      ref={mapContainerRef}
+      className="w-[100vw-4rem] h-screen"
+    />
   );
 };
 
