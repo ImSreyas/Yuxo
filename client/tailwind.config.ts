@@ -9,6 +9,9 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      width: {
+        "18": "4.5rem",
+      },
       fontSize: {
         "2xs": "0.6rem",
         "3xs": "0.5rem",
