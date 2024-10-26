@@ -50,7 +50,7 @@ const SideBar = ({
     },
   ];
 
-  const showLayoutPaths = ["/"];
+  const showLayoutPaths = ["/", "/taxi", "/review", "/settings"];
   const shouldShowLayout = showLayoutPaths.includes(pathname);
 
   return shouldShowLayout ? (
@@ -172,7 +172,7 @@ const SideBar = ({
           ></div>
         )} */}
       </div>
-      <div className="w-full h-full">
+      <div className="w-full h-full ps-16">
         <div
           className={cn(
             "z-10 w-screen h-screen pointer-events-none fixed inset-0 transition-colors duration-300",
