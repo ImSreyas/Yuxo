@@ -17,7 +17,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="">
         <Toaster className="pointer-events-auto" />
-        <SideBar children={children} />
+        <SideBar>{children}</SideBar>
       </body>
     </html>
   );
