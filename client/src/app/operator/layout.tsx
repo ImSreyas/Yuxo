@@ -13,11 +13,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className="">
-        <Toaster className="pointer-events-auto" />
-        <SideBar>{children}</SideBar>
-      </body>
-    </html>
+    <div>
+      <Toaster className="pointer-events-auto" />
+      <SideBar>{children}</SideBar>
+    </div>
   );
 }

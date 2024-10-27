@@ -5,7 +5,6 @@ import SubNav from "./buses/components/SubNav";
 import Buses from "./buses/components/Buses";
 
 const page = () => {
-
   return (
     <>
       {/* <Nav /> */}

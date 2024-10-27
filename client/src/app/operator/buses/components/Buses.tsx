@@ -10,19 +10,24 @@ const Buses = () => {
   const [busesData, setBusData] = useState([]);
   const { busAdded, setBusAdded }: any = useNewBusAddedStore();
 
+  const getBusData = async () => {
+    setBusAdded(false);
+    const {
+      data: { response },
+    } = await axios.post("/api/operator/bus/get");
+    setBusData(response);
+  };
+
   useEffect(() => {
-    const getBusData = async () => {
-      setBusAdded(false);
-      const {
-        data: { response },
-      } = await axios.post("/api/operator/bus/get");
-      setBusData(response);
-    };
     if (busAdded) {
       getBusData();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [busAdded]);
+
+  useEffect(() => {
+    getBusData();
+  }, []);
 
   return (
     <div className="grid gap-5 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
