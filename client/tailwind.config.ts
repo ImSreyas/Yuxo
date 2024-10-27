@@ -11,6 +11,12 @@ const config: Config = {
     extend: {
       width: {
         "18": "4.5rem",
+        "100": "25rem",
+        "108": "28rem",
+        "120": "32rem",
+      },
+      borderWidth: {
+        '1': '1px', // For standard borders with 1px width
       },
       fontSize: {
         "2xs": "0.6rem",
@@ -70,6 +76,17 @@ const config: Config = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [require("tailwindcss-animate"), 
+    function ({ addUtilities, theme }: any) {
+      const customBorders = {
+        '.border-t-1': { borderTopWidth: theme('borderWidth.1') },
+        '.border-r-1': { borderRightWidth: theme('borderWidth.1') },
+        '.border-b-1': { borderBottomWidth: theme('borderWidth.1') },
+        '.border-l-1': { borderLeftWidth: theme('borderWidth.1') },
+      };
+
+      addUtilities(customBorders, ['responsive']);
+    },
+  ],
 };
 export default config;

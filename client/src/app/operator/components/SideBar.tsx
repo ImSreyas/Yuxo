@@ -69,7 +69,7 @@ const SideBar = ({
 
   return shouldShowLayout ? (
     <main className="flex min-h-screen overflow-hidden bg-background">
-      <div className="w-fit h-full fixed top-0 left-0 z-20 flex">
+      <div className="w-fit h-full fixed top-0 left-0 z-50 flex">
         <aside
           onMouseEnter={() => setIsExpanded(true)}
           onMouseLeave={() => setIsExpanded(false)}
@@ -181,7 +181,7 @@ const SideBar = ({
       <div className="w-full h-full ps-16">
         <div
           className={cn(
-            "z-10 w-screen h-screen pointer-events-none fixed inset-0 transition-colors duration-300",
+            "z-40 w-screen h-screen pointer-events-none fixed inset-0 transition-colors duration-300",
             isExpanded && "bg-black/75"
           )}
         ></div>
