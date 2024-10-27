@@ -8,7 +8,14 @@ import MapboxGeocoding, {
 } from "@mapbox/mapbox-sdk/services/geocoding";
 import MapboxDirections from "@mapbox/mapbox-sdk/services/directions";
 import { Input } from "@/components/ui/input";
-import { ChevronsLeft, MapPin, Search, StepBack, X } from "lucide-react";
+import {
+  ChevronsLeft,
+  ChevronsRight,
+  MapPin,
+  Search,
+  StepBack,
+  X,
+} from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -35,6 +42,7 @@ const Map: React.FC = () => {
   const [distances, setDistances] = useState<Record<string, number | null>>({});
   const markerRef = useRef<Marker | null>(null);
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [sideBarActive, setSideBarActive] = useState<boolean>(true);
 
   const calculateOffset = (longitude: number) => {
     const offsetLongitude = 0.017;
@@ -43,6 +51,10 @@ const Map: React.FC = () => {
 
   const handleSearchClose = (e: any) => {
     setQuery("");
+  };
+
+  const triggerSideBarActive = (e: any) => {
+    setSideBarActive((prev) => !prev);
   };
 
   const [currentLocation, setCurrentLocation] = useState<[number, number]>([
@@ -85,6 +97,7 @@ const Map: React.FC = () => {
         clearTimeout(debounceTimeoutRef.current);
       }
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query]);
 
   const fetchSuggestions = async () => {
@@ -170,7 +183,7 @@ const Map: React.FC = () => {
 
     mapRef.current?.easeTo({
       center: [longitude, latitude],
-      zoom: 16,
+      zoom: 15,
       duration: 1200,
       offset: [200, 0],
     });
@@ -184,7 +197,12 @@ const Map: React.FC = () => {
   return (
     <div className="relative block">
       <div className="block h-full">
-        <div className="absolute w-100 top-0 left-0 z-10 px-5 py-6 bg-white h-full block">
+        <div
+          className={cn(
+            "absolute w-100 top-0 left-0 z-10 px-5 py-6 bg-white h-full block transition-all duration-400",
+            sideBarActive ? "" : "-left-100"
+          )}
+        >
           <div className="relative">
             <Input
               type="text"
@@ -207,7 +225,7 @@ const Map: React.FC = () => {
           </div>
           <ToolBar />
           {/* <div className="border-b-1 border-zinc-200 my-1"></div> */}
-          <div className="h-[80%] mt-1 overflow-y-scroll no-scrollbar">
+          <div className="h-[76%] max-h-[90%] mt-2 overflow-y-scroll no-scrollbar">
             {suggestions.length > 0 ? (
               suggestions.map((place) => (
                 <div
@@ -272,8 +290,18 @@ const Map: React.FC = () => {
             )}
           </div>
         </div>
-        <button className="absolute top-1/2 -translate-y-1/2 left-[25.5rem] z-20 w-fit h-fit py-4 px-1 rounded-lg bg-background">
-          <ChevronsLeft className="h-4 w-4" />
+        <button
+          className={cn(
+            "absolute top-1/2 -translate-y-1/2 left-[25.5rem] z-20 w-fit h-fit py-4 px-2 rounded-xl bg-background border border-zinc-300 shadow-sm transition-all duration-400",
+            sideBarActive ? "" : "left-2"
+          )}
+          onClick={triggerSideBarActive}
+        >
+          {sideBarActive ? (
+            <ChevronsLeft className="h-4 w-4" />
+          ) : (
+            <ChevronsRight className="h-4 w-4" />
+          )}
         </button>
       </div>
 
