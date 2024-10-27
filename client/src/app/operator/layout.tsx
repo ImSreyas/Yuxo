@@ -1,9 +1,23 @@
-import { PropsWithChildren } from "react"
+import type { Metadata } from "next";
+import { Toaster } from "sonner";
+import SideBar from "./components/SideBar";
 
-const layout: React.FC<PropsWithChildren> = ({children}) => {
+export const metadata: Metadata = {
+  title: "Yuxo",
+  description: "Bus public transportation navigator for passengers",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
-    <main className="">{children}</main>
-  )
+    <html lang="en">
+      <body className="">
+        <Toaster className="pointer-events-auto" />
+        <SideBar>{children}</SideBar>
+      </body>
+    </html>
+  );
 }
-
-export default layout

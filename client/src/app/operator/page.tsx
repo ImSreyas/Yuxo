@@ -8,8 +8,8 @@ const page = () => {
 
   return (
     <>
-      <Nav />
-      <div className="pt-4 pb-8 px-6 sm:px-8 md:px-10 lg:px-16">
+      {/* <Nav /> */}
+      <div className="py-10 px-6 sm:px-8 md:px-10 lg:px-16">
         <SubNav />
         <Buses />
       </div>

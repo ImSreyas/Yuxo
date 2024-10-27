@@ -3,10 +3,7 @@ import Nav from '../components/Nav'
 
 const page = () => {
   return (
-    <>
-      <Nav />
-      <div>page</div>
-    </>
+      <div>routes page</div>
   )
 }
 

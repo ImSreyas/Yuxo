@@ -2,12 +2,7 @@ import React from "react";
 import Nav from "../components/Nav";
 
 const page = () => {
-  return (
-    <>
-      <Nav />
-      <div>page</div>
-    </>
-  );
+  return <div>Schedules page</div>;
 };
 
 export default page;

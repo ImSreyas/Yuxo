@@ -23,7 +23,7 @@ const LogoutButton = ({ expandState }: { expandState: [boolean, any] }) => {
 
   const handleLogout = () => {
     logout();
-    router.push("/login");
+    router.push("/login/admin");
   };
 
   useEffect(() => {
