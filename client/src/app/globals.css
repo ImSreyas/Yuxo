@@ -20,9 +20,13 @@
   }
 }
 
+.mapboxgl-ctrl-attrib-inner {
+  display: none;
+}
+
 @font-face {
-  font-family: 'uber';
-  src: url('/fonts/UberMoveMedium.otf') format('opentype');
+  font-family: "uber";
+  src: url("/fonts/UberMoveMedium.otf") format("opentype");
   font-weight: normal;
   font-style: normal;
 }
@@ -34,8 +38,6 @@ body {
   font-weight: 600;
   min-height: 100dvh;
 }
-
-
 
 @layer utilities {
   .text-balance {

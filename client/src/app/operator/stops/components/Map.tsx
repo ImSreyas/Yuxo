@@ -9,8 +9,12 @@ import MapboxGeocoding, {
 import MapboxDirections from "@mapbox/mapbox-sdk/services/directions";
 import { Input } from "@/components/ui/input";
 import {
+  ArrowRight,
+  ChevronRight,
   ChevronsLeft,
   ChevronsRight,
+  Locate,
+  LocateFixed,
   MapPin,
   Search,
   StepBack,
@@ -25,6 +29,7 @@ import {
 import ToolBar from "./ToolBar";
 import { cn } from "@/lib/utils";
 import { number } from "zod";
+import { Button } from "@/components/ui/button";
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN!;
 
@@ -41,8 +46,16 @@ const Map: React.FC = () => {
   const [currentSelectedPlace, setCurrentSelectedPlace] = useState<string>();
   const [distances, setDistances] = useState<Record<string, number | null>>({});
   const markerRef = useRef<Marker | null>(null);
+  const selectedLocationRef = useRef<Marker | null>(null);
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [sideBarActive, setSideBarActive] = useState<boolean>(true);
+  const [markedLocation, setMarkedLocation] = useState<[number, number] | null>(
+    null
+  );
+  const [showMarkerCard, setShowMarkerCard] = useState<boolean>(false);
+  const [currentLocation, setCurrentLocation] = useState<[number, number]>([
+    77.191492, 28.613945,
+  ]);
 
   const calculateOffset = (longitude: number) => {
     const offsetLongitude = 0.017;
@@ -57,9 +70,42 @@ const Map: React.FC = () => {
     setSideBarActive((prev) => !prev);
   };
 
-  const [currentLocation, setCurrentLocation] = useState<[number, number]>([
-    77.191492, 28.613945,
-  ]);
+  const handleLocationMarking = ([lng, lat]: [number, number]): void => {
+    setShowMarkerCard(true);
+  };
+  const handleMarkerClose = (e: any) => {
+    if (selectedLocationRef.current) {
+      selectedLocationRef.current.remove();
+      selectedLocationRef.current = null;
+      setShowMarkerCard(false);
+      // setMarkedLocation(null);
+    }
+  };
+
+  const fetchCurrentLocation = () => {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { longitude, latitude } = position.coords;
+        setCurrentLocation([longitude, latitude]);
+      },
+      (error) => {
+        // console.error("Error getting current location:", error);
+        setCurrentLocation([77.191492, 28.613945]);
+      }
+    );
+  };
+
+  const moveToCenter = () => {
+    setCurrentSelectedPlace("");
+    mapRef.current?.easeTo({
+      center: currentLocation,
+      zoom: 13,
+      duration: 1200,
+      offset: [200, 0],
+    });
+
+    markerRef.current?.setLngLat(currentLocation).addTo(mapRef.current!);
+  };
 
   // console.log(distances, suggestions);
 
@@ -78,8 +124,24 @@ const Map: React.FC = () => {
       .setLngLat(currentLocation)
       .addTo(mapRef.current!);
 
+    mapRef.current.on("click", (event) => {
+      const [lng, lat] = [event.lngLat.lng, event.lngLat.lat];
+      setMarkedLocation([lng, lat]);
+
+      // Place or update the marker at the clicked location
+      if (selectedLocationRef.current) {
+        selectedLocationRef.current.setLngLat([lng, lat]);
+      } else {
+        selectedLocationRef.current = new mapboxgl.Marker({ color: "#000" })
+          .setLngLat([lng, lat])
+          .addTo(mapRef.current!);
+      }
+      handleLocationMarking([lng, lat]);
+    });
+
     return () => {
       mapRef.current?.remove();
+      selectedLocationRef.current?.remove();
     };
   }, [currentLocation]);
 
@@ -97,7 +159,7 @@ const Map: React.FC = () => {
         clearTimeout(debounceTimeoutRef.current);
       }
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query]);
 
   const fetchSuggestions = async () => {
@@ -165,16 +227,7 @@ const Map: React.FC = () => {
   };
 
   useEffect(() => {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { longitude, latitude } = position.coords;
-        setCurrentLocation([longitude, latitude]);
-      },
-      (error) => {
-        // console.error("Error getting current location:", error);
-        setCurrentLocation([77.191492, 28.613945]);
-      }
-    );
+    fetchCurrentLocation();
   }, []);
 
   const handleSelectSuggestion = (place: GeocodeFeature) => {
@@ -304,6 +357,60 @@ const Map: React.FC = () => {
           )}
         </button>
       </div>
+
+      <div
+        className={cn(
+          "absolute  right-4 z-20 bg-background bottom-0 translate-y-[100%] transition-all duration-300 px-4 pb-4 pt-2 rounded-lg grid grid-cols-2 gap-x-3 auto-rows-min",
+          showMarkerCard ? "translate-y-0 bottom-4" : ""
+        )}
+      >
+        <div className="col-span-2 flex justify-end">
+          <button
+            className="bg-muted p-1 rounded-md cursor-pointer"
+            onClick={handleMarkerClose}
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+        <div className="text-xs px-1">
+          <div className="bg-muted w-fit px-2 py-[1px] rounded-md mb-1 text-2xs">
+            Latitude
+          </div>
+          <div className="border-l border-black px-2">
+            {markedLocation?.[1]}
+          </div>
+        </div>
+        <div className="text-xs px-1">
+          <div className="bg-muted w-fit px-2 py-[1px] rounded-md mb-1 text-2xs">
+            Longitude
+          </div>
+          <div className="border-l border-black px-2">
+            {markedLocation?.[0]}
+          </div>
+        </div>
+        <div className="col-span-2 mt-3">
+          <Button className="w-full flex gap-1 justify-center">
+            <div>continue</div>
+            <ArrowRight className="h-3 w-3" />
+          </Button>
+        </div>
+      </div>
+
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div
+              className="absolute top-4 right-4 p-3 rounded-full bg-background z-20 shadow-xl cursor-pointer"
+              onClick={moveToCenter}
+            >
+              <LocateFixed className="h-5 w-5" />
+            </div>
+          </TooltipTrigger>
+          <TooltipContent className="mx-2">
+            <p>Current Location</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
 
       <div
         id="map-container"

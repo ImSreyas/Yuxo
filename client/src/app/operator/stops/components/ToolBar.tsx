@@ -112,7 +112,7 @@ const ToolBar = ({
             size="sm"
             className="border-dashed border-zinc-300 rounded-full"
           >
-            <ArrowDownWideNarrow className="mr-2 h-3 w-3" />
+            <ArrowDownWideNarrow className="mr-2 h-4 w-4" />
             {activeSort && sortOptions
               ? sortOptions.find((option) => option.value === activeSort)
                   ?.label || "Sort"
@@ -152,7 +152,7 @@ const ToolBar = ({
             size="sm"
             className="border-dashed border-zinc-300 rounded-full"
           >
-            <Sparkles className="mr-2 h-3 w-3" />
+            <Sparkles className="mr-2 h-4 w-4" />
             Filter
             {activeFilters.length > 0 && (
               <span className="flex items-center justify-center ml-2 rounded-full bg-primary px-1 text-2xs w-4 h-4 font-medium text-primary-foreground">
