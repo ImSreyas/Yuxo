@@ -224,6 +224,17 @@ const Map: React.FC = () => {
     });
   };
 
+  const refreshBusStops = async () => {
+    const geoJsonData = await fetchAllStops();
+    const busStopsSource = mapRef.current?.getSource("busStops");
+
+    if (geoJsonData && busStopsSource && "setData" in busStopsSource) {
+      busStopsSource.setData(geoJsonData);
+    } else {
+      console.error("Unable to update bus stops source: Source may not exist.");
+    }
+  };
+
   useEffect(() => {
     if (!mapContainerRef.current) return;
 
@@ -563,7 +574,7 @@ const Map: React.FC = () => {
         setIsOpen={setIsAddBusDialogOpen}
         point={markedLocation || [0, 0]}
         handleMarkerClose={handleMarkerClose}
-        addBusStopToCanvas={addBusStopToCanvas}
+        refreshBusStops={refreshBusStops}
       />
 
       {/* Map  */}

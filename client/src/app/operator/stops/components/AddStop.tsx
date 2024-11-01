@@ -64,13 +64,13 @@ const AddStop = ({
   setIsOpen,
   point,
   handleMarkerClose,
-  addBusStopToCanvas,
+  refreshBusStops,
 }: {
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
   point: [number, number];
   handleMarkerClose: (e?: any) => void;
-  addBusStopToCanvas: () => void;
+  refreshBusStops: () => void;
 }) => {
   const form = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -107,7 +107,7 @@ const AddStop = ({
           duration: 6000,
         });
         handleMarkerClose();
-        addBusStopToCanvas();
+        refreshBusStops();
       }
     } catch (e: any) {
       console.log(e.response.data.data.code);
