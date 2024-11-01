@@ -14,7 +14,7 @@ export default function RootLayout({
 }>) {
   return (
     <div>
-      <Toaster className="pointer-events-auto" />
+      {/* <Toaster className="pointer-events-auto" /> */}
       <SideBar>{children}</SideBar>
     </div>
   );

@@ -10,14 +10,11 @@ import MapboxDirections from "@mapbox/mapbox-sdk/services/directions";
 import { Input } from "@/components/ui/input";
 import {
   ArrowRight,
-  ChevronRight,
   ChevronsLeft,
   ChevronsRight,
-  Locate,
   LocateFixed,
   MapPin,
   Search,
-  StepBack,
   X,
 } from "lucide-react";
 import {
@@ -28,8 +25,9 @@ import {
 } from "@/components/ui/tooltip";
 import ToolBar from "./ToolBar";
 import { cn } from "@/lib/utils";
-import { number } from "zod";
 import { Button } from "@/components/ui/button";
+import AddStop from "./AddStop";
+import supabase from "@/utils/supabase/client";
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN!;
 
@@ -56,6 +54,7 @@ const Map: React.FC = () => {
   const [currentLocation, setCurrentLocation] = useState<[number, number]>([
     77.191492, 28.613945,
   ]);
+  const [isAddBusDialogOpen, setIsAddBusDialogOpen] = useState<boolean>(false);
 
   const calculateOffset = (longitude: number) => {
     const offsetLongitude = 0.017;
@@ -73,7 +72,7 @@ const Map: React.FC = () => {
   const handleLocationMarking = ([lng, lat]: [number, number]): void => {
     setShowMarkerCard(true);
   };
-  const handleMarkerClose = (e: any) => {
+  const handleMarkerClose = (e?: any) => {
     if (selectedLocationRef.current) {
       selectedLocationRef.current.remove();
       selectedLocationRef.current = null;
@@ -107,7 +106,123 @@ const Map: React.FC = () => {
     markerRef.current?.setLngLat(currentLocation).addTo(mapRef.current!);
   };
 
-  // console.log(distances, suggestions);
+  const fetchAllStops = async (): Promise<any> => {
+    const { data, error } = await supabase.from("tbl_bus_stops").select("*");
+
+    if (error) {
+      console.error("Error fetching stops:", error);
+      return null;
+    }
+
+    if (!data) {
+      console.error("No data found");
+      return null;
+    }
+
+    const geoJsonData = {
+      type: "FeatureCollection",
+      features: data.map((stop) => ({
+        type: "Feature",
+        geometry: {
+          type: "Point",
+          coordinates: stop.location.coordinates,
+        },
+        properties: {
+          stop_id: stop.stop_id,
+          stop_name: stop.stop_name,
+          operator_id: stop.operator_id,
+          status: stop.status,
+          stop_type: stop.stop_type,
+        },
+      })),
+    };
+
+    return geoJsonData;
+  };
+
+  const addBusStopToCanvas = () => {
+    mapRef.current?.on("load", async () => {
+      const geoJsonData = await fetchAllStops();
+      if (!geoJsonData) {
+        console.error("No GeoJSON data available");
+        return;
+      }
+
+      mapRef.current?.addSource("busStops", {
+        type: "geojson",
+        data: geoJsonData,
+      });
+
+      mapRef.current?.loadImage("/bus_stop.png", (error, image: any) => {
+        if (error) throw error;
+
+        mapRef.current?.addImage("bus-icon", image);
+
+        mapRef.current?.addLayer({
+          id: "busStopsLayer",
+          type: "symbol",
+          source: "busStops",
+          layout: {
+            "icon-image": "bus-icon",
+            "icon-size": 0.07,
+            "icon-allow-overlap": true,
+          },
+        });
+        // mapRef.current?.addLayer({
+        //   id: "busStopsLayer",
+        //   type: "circle",
+        //   source: "busStops",
+        //   paint: {
+        //     "circle-radius": 7,
+        //     "circle-color": "#000",
+        //   },
+        // });
+        mapRef.current?.addLayer({
+          id: "busStopsLabelLayer",
+          type: "symbol",
+          source: "busStops",
+          layout: {
+            "text-field": ["get", "stop_name"],
+            "text-size": 13,
+            "text-anchor": "top",
+            "text-offset": [0, 1.6],
+            "text-allow-overlap": true,
+          },
+          paint: {
+            "text-color": "#000",
+            "text-halo-color": "#fff",
+            "text-halo-width": 2,
+          },
+        });
+      });
+
+      mapRef.current?.on("click", "busStopsLayer", (e) => {
+        if (e.features && e.features.length > 0) {
+          const properties = e.features[0].properties as BusStopProperties;
+          const { stop_name, stop_type } = properties;
+
+          new mapboxgl.Popup()
+            .setLngLat(e.lngLat)
+            .setHTML(`<strong>${stop_name}</strong><br>Type: ${stop_type}`)
+            .addTo(mapRef.current!);
+        }
+      });
+
+      mapRef.current?.on("mouseenter", "busStopsLayer", () => {
+        const canvas = mapRef.current?.getCanvas();
+        if (canvas) {
+          canvas.style.cursor = "pointer";
+        }
+      });
+
+      mapRef.current?.on("mouseleave", "busStopsLayer", () => {
+        const canvas = mapRef.current?.getCanvas();
+        if (canvas) {
+          canvas.style.cursor = "";
+        }
+      });
+    });
+  };
 
   useEffect(() => {
     if (!mapContainerRef.current) return;
@@ -119,6 +234,8 @@ const Map: React.FC = () => {
       zoom: 13,
       projection: "mercator",
     });
+
+    addBusStopToCanvas();
 
     markerRef.current = new mapboxgl.Marker({ color: "#F00", offset: [0, 0] })
       .setLngLat(currentLocation)
@@ -226,6 +343,27 @@ const Map: React.FC = () => {
     }
   };
 
+  interface BusStopProperties {
+    stop_id: number;
+    stop_name: string;
+    operator_id: string;
+    status: boolean;
+    stop_type: string;
+  }
+
+  interface BusStop {
+    location: {
+      coordinates: [number, number]; // [lng, lat]
+    };
+    stop_id: number;
+    stop_name: string;
+    operator_id: string;
+    status: boolean;
+    stop_type: string;
+  }
+
+  // Function for fetching ALL BUS STOPS
+
   useEffect(() => {
     fetchCurrentLocation();
   }, []);
@@ -252,7 +390,7 @@ const Map: React.FC = () => {
       <div className="block h-full">
         <div
           className={cn(
-            "absolute w-100 top-0 left-0 z-10 px-5 py-6 bg-white h-full block transition-all duration-400",
+            "absolute w-100 top-0 left-0 z-10 px-5 py-6 bg-white h-full block transition-all duration-400 border-right border-r",
             sideBarActive ? "" : "-left-100"
           )}
         >
@@ -358,13 +496,15 @@ const Map: React.FC = () => {
         </button>
       </div>
 
+      {/* Marker card  */}
       <div
         className={cn(
           "absolute  right-4 z-20 bg-background bottom-0 translate-y-[100%] transition-all duration-300 px-4 pb-4 pt-2 rounded-lg grid grid-cols-2 gap-x-3 auto-rows-min",
           showMarkerCard ? "translate-y-0 bottom-4" : ""
         )}
       >
-        <div className="col-span-2 flex justify-end">
+        <div className="col-span-2 flex justify-between mb-2">
+          <div className="p-1 text-sm">Add bus stop</div>
           <button
             className="bg-muted p-1 rounded-md cursor-pointer"
             onClick={handleMarkerClose}
@@ -389,13 +529,19 @@ const Map: React.FC = () => {
           </div>
         </div>
         <div className="col-span-2 mt-3">
-          <Button className="w-full flex gap-1 justify-center">
+          <Button
+            className="w-full flex gap-1 justify-center"
+            onClick={() => {
+              setIsAddBusDialogOpen(true);
+            }}
+          >
             <div>continue</div>
             <ArrowRight className="h-3 w-3" />
           </Button>
         </div>
       </div>
 
+      {/* Move to center button  */}
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
@@ -412,6 +558,15 @@ const Map: React.FC = () => {
         </Tooltip>
       </TooltipProvider>
 
+      <AddStop
+        isOpen={isAddBusDialogOpen}
+        setIsOpen={setIsAddBusDialogOpen}
+        point={markedLocation || [0, 0]}
+        handleMarkerClose={handleMarkerClose}
+        addBusStopToCanvas={addBusStopToCanvas}
+      />
+
+      {/* Map  */}
       <div
         id="map-container"
         ref={mapContainerRef}
