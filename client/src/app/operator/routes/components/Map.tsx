@@ -10,11 +10,14 @@ import MapboxDirections from "@mapbox/mapbox-sdk/services/directions";
 import { Input } from "@/components/ui/input";
 import {
   ArrowRight,
+  AudioWaveform,
   ChevronsLeft,
   ChevronsRight,
   LocateFixed,
   MapPin,
   Search,
+  Spline,
+  TicketPlus,
   X,
 } from "lucide-react";
 import {
@@ -29,6 +32,7 @@ import { Button } from "@/components/ui/button";
 import AddStop from "./AddStop";
 import supabase from "@/utils/supabase/client";
 import SideBar from "./SideBar";
+import AddRoute from "./AddRoute";
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN!;
 
@@ -56,6 +60,9 @@ const Map: React.FC = () => {
     77.191492, 28.613945,
   ]);
   const [isAddBusDialogOpen, setIsAddBusDialogOpen] = useState<boolean>(false);
+  const [isAddRouteDialogOpen, setIsAddRouteDialogOpen] =
+    useState<boolean>(false);
+  const [selectedStops, setSelectedStops] = useState<any>([]);
 
   const calculateOffset = (longitude: number) => {
     const offsetLongitude = 0.017;
@@ -489,6 +496,63 @@ const Map: React.FC = () => {
     // setQuery(place.place_name);
   };
 
+  useEffect(() => {
+    // Check if the map and selected stops data are available
+    if (!mapRef.current || selectedStops.length === 0) return;
+
+    // Extract coordinates from each selected stop
+    const coordinates = selectedStops.map(
+      (stop: any) => stop.location.coordinates
+    );
+
+    // Define the GeoJSON LineString
+    const geoJsonData: any = {
+      type: "Feature",
+      geometry: {
+        type: "LineString",
+        coordinates: coordinates, // Array of [longitude, latitude]
+      },
+    };
+
+    // Add source and layer to the map for the path
+    if (mapRef.current.getSource("route")) {
+      mapRef.current.removeLayer("route-layer");
+      mapRef.current.removeSource("route");
+    }
+
+    mapRef.current.addSource("route", {
+      type: "geojson",
+      data: geoJsonData,
+    });
+
+    mapRef.current.addLayer({
+      id: "route-layer",
+      type: "line",
+      source: "route",
+      layout: {
+        "line-join": "round",
+        "line-cap": "round",
+      },
+      paint: {
+        // "line-color": "#ff7f50",
+        "line-color": "#000",
+        "line-width": 5,
+      },
+    });
+
+    // Clean up on component unmount
+    return () => {
+      if (mapRef.current && mapRef.current.getSource("route")) {
+        mapRef.current.removeLayer("route-layer");
+        mapRef.current.removeSource("route");
+      }
+    };
+  }, [mapRef, selectedStops]);
+
+  const handleAddRoute = () => {
+    setIsAddRouteDialogOpen(true);
+  };
+
   return (
     <div className="relative block">
       <div className="block h-full">
@@ -502,6 +566,8 @@ const Map: React.FC = () => {
           currentSelectedPlace={currentSelectedPlace}
           handleSelectSuggestion={handleSelectSuggestion}
           distances={distances}
+          selectedStops={selectedStops}
+          setSelectedStops={setSelectedStops}
         />
         <button
           className={cn(
@@ -517,6 +583,16 @@ const Map: React.FC = () => {
           )}
         </button>
       </div>
+
+      {selectedStops.length > 1 && (
+        <Button
+          className="absolute right-4 bottom-4 z-20 rounded-lg px-8 space-x-2 flex justify-center items-center"
+          onClick={handleAddRoute}
+        >
+          <div>Add route</div>
+          <TicketPlus className="w-4 h-4" />
+        </Button>
+      )}
 
       {/* Marker card  */}
       <div
@@ -586,6 +662,11 @@ const Map: React.FC = () => {
         point={markedLocation || [0, 0]}
         handleMarkerClose={handleMarkerClose}
         refreshBusStops={refreshBusStops}
+      />
+
+      <AddRoute
+        isOpen={isAddRouteDialogOpen}
+        setIsOpen={setIsAddRouteDialogOpen}
       />
 
       {/* Map  */}

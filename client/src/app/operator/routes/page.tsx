@@ -1,10 +1,8 @@
-import React from 'react'
-import Nav from '../components/Nav'
+import React from "react";
+import Map from "./components/Map";
 
 const page = () => {
-  return (
-      <div>routes page</div>
-  )
-}
+  return <Map />;
+};
 
-export default page
+export default page;
