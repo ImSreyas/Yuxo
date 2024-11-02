@@ -106,6 +106,26 @@ const Map: React.FC = () => {
     markerRef.current?.setLngLat(currentLocation).addTo(mapRef.current!);
   };
 
+  interface BusStopProperties {
+    stop_id: number;
+    stop_name: string;
+    operator_id: string;
+    status: boolean;
+    stop_type: string;
+  }
+
+  interface BusStop {
+    location: {
+      coordinates: [number, number]; // [lng, lat]
+    };
+    stop_id: number;
+    stop_name: string;
+    operator_id: string;
+    status: boolean;
+    stop_type: string;
+  }
+
+  // Function for fetching all bus stop markers from db.
   const fetchAllStops = async (): Promise<any> => {
     const { data, error } = await supabase.from("tbl_bus_stops").select("*");
 
@@ -140,6 +160,52 @@ const Map: React.FC = () => {
     return geoJsonData;
   };
 
+  // An array for storing the bus stop markers
+  let busStopMarkers: mapboxgl.Marker[] = [];
+  const markerZoomThreshold = 14;
+
+  const refreshBusStops = async () => {
+    const geoJsonData = await fetchAllStops();
+    const busStopsSource = mapRef.current?.getSource("busStops");
+
+    if (geoJsonData && busStopsSource && "setData" in busStopsSource) {
+      // Set the new GeoJSON data to the source
+      busStopsSource.setData(geoJsonData);
+      addBusStopMarkers(geoJsonData);
+    } else {
+      console.error("Unable to update bus stops source: Source may not exist.");
+    }
+  };
+
+  // function for adding bus stop markers (also on refresh when adding new stops)
+  const addBusStopMarkers = (geoJsonData: any) => {
+    // Remove existing markers
+    busStopMarkers.forEach((marker) => marker.remove());
+    busStopMarkers = [];
+
+    // Add new markers
+    geoJsonData.features.forEach((stop: any) => {
+      const [longitude, latitude] = stop.geometry.coordinates;
+
+      if (mapRef.current) {
+        const marker = new mapboxgl.Marker({ color: "#000" })
+          .setLngLat([longitude, latitude])
+          .setPopup(
+            new mapboxgl.Popup({ offset: 25 }).setHTML(
+              `<center><strong>${stop.properties.stop_name}</strong><br><strong>${stop.properties.stop_type}</strong></center>`
+            )
+          )
+          .addTo(mapRef.current);
+
+        // Store the marker in the array for future reference
+        busStopMarkers.push(marker);
+      } else {
+        console.error("Map instance is not available.");
+      }
+    });
+  };
+
+  // Function for adding the GeoJSON data layer to the map
   const addBusStopToCanvas = () => {
     mapRef.current?.on("load", async () => {
       const geoJsonData = await fetchAllStops();
@@ -153,48 +219,106 @@ const Map: React.FC = () => {
         data: geoJsonData,
       });
 
-      mapRef.current?.loadImage("/bus_stop.png", (error, image: any) => {
-        if (error) throw error;
+      // Normal markers
+      // Adding bus stop markers
+      addBusStopMarkers(geoJsonData);
 
-        mapRef.current?.addImage("bus-icon", image);
+      // ! The below part made functional (addBusStopMarkers)
+      // geoJsonData.features.forEach((stop: any) => {
+      //   const [longitude, latitude] = stop.geometry.coordinates;
 
-        mapRef.current?.addLayer({
-          id: "busStopsLayer",
-          type: "symbol",
-          source: "busStops",
-          layout: {
-            "icon-image": "bus-icon",
-            "icon-size": 0.07,
-            "icon-allow-overlap": true,
-          },
-        });
-        // mapRef.current?.addLayer({
-        //   id: "busStopsLayer",
-        //   type: "circle",
-        //   source: "busStops",
-        //   paint: {
-        //     "circle-radius": 7,
-        //     "circle-color": "#000",
-        //   },
-        // });
-        mapRef.current?.addLayer({
-          id: "busStopsLabelLayer",
-          type: "symbol",
-          source: "busStops",
-          layout: {
-            "text-field": ["get", "stop_name"],
-            "text-size": 13,
-            "text-anchor": "top",
-            "text-offset": [0, 1.6],
-            "text-allow-overlap": true,
-          },
-          paint: {
-            "text-color": "#000",
-            "text-halo-color": "#fff",
-            "text-halo-width": 2,
-          },
-        });
+      //   if (mapRef.current) {
+      //     new mapboxgl.Marker({ color: "#000" })
+      //       .setLngLat([longitude, latitude])
+      //       .setPopup(
+      //         new mapboxgl.Popup({ offset: 25 }).setHTML(
+      //           `<strong>${stop.properties.stop_name}</strong>`
+      //         )
+      //       )
+      //       .addTo(mapRef.current);
+      //   } else {
+      //     console.error("Map instance is not available.");
+      //   }
+      // });
+
+      // Bus stop label
+      mapRef.current?.addLayer({
+        id: "busStopsLabelLayer",
+        type: "symbol",
+        source: "busStops",
+        layout: {
+          "text-field": ["get", "stop_name"],
+          "text-size": 13,
+          "text-anchor": "top",
+          "text-offset": [0, 0.2],
+          "text-allow-overlap": true,
+        },
+        paint: {
+          "text-color": "#000",
+          "text-halo-color": "#fff",
+          "text-halo-width": 2,
+        },
       });
+
+      // ? Image markers (now using the normal markers)
+
+      // mapRef.current?.loadImage("/bus_stop.png", (error, image: any) => {
+      //   if (error) throw error;
+
+      //   mapRef.current?.addImage("bus-icon", image);
+
+      //   mapRef.current?.addLayer({
+      //     id: "busStopsLayer",
+      //     type: "symbol",
+      //     source: "busStops",
+      //     layout: {
+      //       "icon-image": "bus-icon",
+      //       "icon-size": 0.07,
+      //       "icon-allow-overlap": true,
+      //     },
+      //   });
+
+      // });
+
+      // ? Shape markers (now using the normal markers)
+      // mapRef.current?.addLayer({
+      //   id: "busStopsLayer",
+      //   type: "circle",
+      //   source: "busStops",
+      //   paint: {
+      //     "circle-radius": 7,
+      //     "circle-color": "#000",
+      //   },
+      // });
+
+      const updateGeoJsonLayerVisibility = () => {
+        const currentZoom = mapRef.current?.getZoom();
+        if (mapRef.current && currentZoom) {
+          if (currentZoom < markerZoomThreshold) {
+            // Hide the GeoJSON layer if zoom is below the threshold
+            mapRef.current.setLayoutProperty(
+              "busStopsLabelLayer",
+              "visibility",
+              "none"
+            );
+          } else {
+            // Show the GeoJSON layer if zoom is above the threshold
+            mapRef.current.setLayoutProperty(
+              "busStopsLabelLayer",
+              "visibility",
+              "visible"
+            );
+          }
+        }
+      };
+      const refreshMarkersOnZoom = async () => {
+        console.log(busStopMarkers);
+        updateGeoJsonLayerVisibility();
+      };
+
+      // Attach the zoom event listener to control marker visibility
+      mapRef.current?.on("zoom", refreshMarkersOnZoom);
+      updateGeoJsonLayerVisibility();
 
       mapRef.current?.on("click", "busStopsLayer", (e) => {
         if (e.features && e.features.length > 0) {
@@ -222,17 +346,6 @@ const Map: React.FC = () => {
         }
       });
     });
-  };
-
-  const refreshBusStops = async () => {
-    const geoJsonData = await fetchAllStops();
-    const busStopsSource = mapRef.current?.getSource("busStops");
-
-    if (geoJsonData && busStopsSource && "setData" in busStopsSource) {
-      busStopsSource.setData(geoJsonData);
-    } else {
-      console.error("Unable to update bus stops source: Source may not exist.");
-    }
   };
 
   useEffect(() => {
@@ -354,27 +467,6 @@ const Map: React.FC = () => {
     }
   };
 
-  interface BusStopProperties {
-    stop_id: number;
-    stop_name: string;
-    operator_id: string;
-    status: boolean;
-    stop_type: string;
-  }
-
-  interface BusStop {
-    location: {
-      coordinates: [number, number]; // [lng, lat]
-    };
-    stop_id: number;
-    stop_name: string;
-    operator_id: string;
-    status: boolean;
-    stop_type: string;
-  }
-
-  // Function for fetching ALL BUS STOPS
-
   useEffect(() => {
     fetchCurrentLocation();
   }, []);
@@ -399,6 +491,7 @@ const Map: React.FC = () => {
   return (
     <div className="relative block">
       <div className="block h-full">
+        {/* side bar block  */}
         <div
           className={cn(
             "absolute w-100 top-0 left-0 z-10 px-5 py-6 bg-white h-full block transition-all duration-400 border-right border-r",
