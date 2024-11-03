@@ -48,7 +48,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   const handleSelect = (stop: any) => {
     setSelectedStops((state: any) => [...state, stop]);
   };
-  console.log(selectedStops);
+  // console.log(selectedStops);
   const fetchBusStops = async () => {
     const { data, error } = await supabase.from("tbl_bus_stops").select("*");
 
@@ -62,7 +62,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       return null;
     }
     setBusStops(data);
-    console.log(data);
+    // console.log(data);
   };
 
   useEffect(() => {

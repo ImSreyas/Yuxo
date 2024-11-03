@@ -320,7 +320,7 @@ const Map: React.FC = () => {
         }
       };
       const refreshMarkersOnZoom = async () => {
-        console.log(busStopMarkers);
+        // console.log(busStopMarkers);
         updateGeoJsonLayerVisibility();
       };
 

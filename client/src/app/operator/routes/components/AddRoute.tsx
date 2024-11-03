@@ -71,10 +71,8 @@ const AddStop = ({
       }
       setIsOpen(false);
     } catch (e: any) {
-      console.log(e);
       if (e?.response?.data?.data?.code == 23505) {
         setIsRouteExists(true);
-        console.log("working");
       }
     } finally {
       setIsLoading(false);
