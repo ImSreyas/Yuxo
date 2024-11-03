@@ -33,6 +33,7 @@ import AddStop from "./AddStop";
 import supabase from "@/utils/supabase/client";
 import SideBar from "./SideBar";
 import AddRoute from "./AddRoute";
+import axios from "axios";
 
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN!;
 
@@ -63,10 +64,17 @@ const Map: React.FC = () => {
   const [isAddRouteDialogOpen, setIsAddRouteDialogOpen] =
     useState<boolean>(false);
   const [selectedStops, setSelectedStops] = useState<any>([]);
+  const [routes, setRoutes] = useState<any>([]);
+  const [selectedRoute, setSelectedRoute] = useState<any>(null);
 
-  const calculateOffset = (longitude: number) => {
-    const offsetLongitude = 0.017;
-    return longitude - offsetLongitude;
+  const calculateOffset = (longitude: number, zoom: number = 13) => {
+    switch (zoom) {
+      case 13:
+        return longitude - 0.017;
+      case 14:
+        return longitude - 0.009;
+    }
+    return longitude - 0.017;
   };
 
   const handleSearchClose = (e?: any) => {
@@ -173,6 +181,9 @@ const Map: React.FC = () => {
   const markerZoomThreshold = 14;
 
   const refreshBusStops = async () => {
+    // Remove existing markers before refreshing
+    clearMarkers();
+
     const geoJsonData = await fetchAllStops();
     const busStopsSource = mapRef.current?.getSource("busStops");
 
@@ -185,11 +196,15 @@ const Map: React.FC = () => {
     }
   };
 
-  // function for adding bus stop markers (also on refresh when adding new stops)
-  const addBusStopMarkers = (geoJsonData: any) => {
-    // Remove existing markers
+  // Function to remove existing markers
+  const clearMarkers = () => {
     busStopMarkers.forEach((marker) => marker.remove());
-    busStopMarkers = [];
+    busStopMarkers = []; // Clear the markers array
+  };
+
+  const addBusStopMarkers = (geoJsonData: any) => {
+    // Clear existing markers
+    clearMarkers();
 
     // Add new markers
     geoJsonData.features.forEach((stop: any) => {
@@ -212,7 +227,6 @@ const Map: React.FC = () => {
       }
     });
   };
-
   // Function for adding the GeoJSON data layer to the map
   const addBusStopToCanvas = () => {
     mapRef.current?.on("load", async () => {
@@ -294,7 +308,7 @@ const Map: React.FC = () => {
       //   type: "circle",
       //   source: "busStops",
       //   paint: {
-      //     "circle-radius": 7,
+      //     "circle-radius": 4,
       //     "circle-color": "#000",
       //   },
       // });
@@ -392,7 +406,7 @@ const Map: React.FC = () => {
       mapRef.current?.remove();
       selectedLocationRef.current?.remove();
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentLocation]);
 
   useEffect(() => {
@@ -554,6 +568,101 @@ const Map: React.FC = () => {
     setIsAddRouteDialogOpen(true);
   };
 
+  const fetchRoutes = async () => {
+    try {
+      const res = await axios.post("/api/operator/route/get");
+      setRoutes(res.data.data);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  // useEffect for fetching routes
+  useEffect(() => {
+    fetchRoutes();
+  }, []);
+
+  console.log(selectedRoute);
+
+  const showRoutePath = () => {
+    if (!selectedRoute || !selectedRoute.route_geometry) {
+      console.warn("No route data available.");
+      return;
+    }
+
+    const coordinates = selectedRoute.route_geometry.coordinates;
+
+    if (!mapRef.current) {
+      return;
+    }
+
+    // Remove the existing route layer if it exists to avoid duplicates
+    if (mapRef.current.getLayer("route-path")) {
+      mapRef.current.removeLayer("route-path");
+      mapRef.current.removeSource("route-path");
+    }
+
+    const geoJSON: any = {
+      type: "Feature",
+      geometry: {
+        type: "LineString",
+        coordinates: coordinates,
+      },
+    };
+
+    // Add the route as a GeoJSON source
+    mapRef.current.addSource("route-path", {
+      type: "geojson",
+      data: geoJSON,
+    });
+
+    // Add the path as a line layer on the map
+    mapRef.current.addLayer({
+      id: "route-path",
+      type: "line",
+      source: "route-path",
+      layout: {
+        "line-join": "round",
+        "line-cap": "round",
+      },
+      paint: {
+        "line-color": "#000",
+        "line-width": 4,
+      },
+    });
+
+    const initialLocation: any = [
+      calculateOffset(coordinates[0][0], 14),
+      coordinates[0][1],
+    ];
+
+    // Smoothly ease to the starting point of the route
+    mapRef.current.easeTo({
+      center: initialLocation,
+      zoom: 14,
+      duration: 1200,
+    });
+
+    busStopMarkers = busStopMarkers.filter((marker) => {
+      const markerLngLat = marker.getLngLat();
+      const isOnPath = coordinates.some(
+        ([lng, lat]: any) =>
+          lng === markerLngLat.lng && lat === markerLngLat.lat
+      );
+
+      if (isOnPath) {
+        marker.remove(); 
+      }
+
+      return !isOnPath; 
+    });
+  };
+
+  useEffect(() => {
+    showRoutePath();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedRoute]);
+
   return (
     <div className="relative block">
       <div className="block h-full">
@@ -569,6 +678,8 @@ const Map: React.FC = () => {
           distances={distances}
           selectedStops={selectedStops}
           setSelectedStops={setSelectedStops}
+          routes={routes}
+          setSelectedRoute={setSelectedRoute}
         />
         <button
           className={cn(

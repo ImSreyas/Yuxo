@@ -15,6 +15,14 @@ import SideBarNav from "./SideBarNav";
 import RouteToolBar from "./RouteToolBar";
 import supabase from "@/utils/supabase/client";
 import { Close } from "@radix-ui/react-toast";
+import { MoreVertical, Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface SidebarProps {
   sideBarActive: boolean;
@@ -27,6 +35,8 @@ interface SidebarProps {
   distances: Record<string, number | null>;
   selectedStops: any[];
   setSelectedStops: Dispatch<SetStateAction<any[]>>;
+  routes: any[];
+  setSelectedRoute: Dispatch<SetStateAction<any>>;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
@@ -40,6 +50,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   distances,
   selectedStops,
   setSelectedStops,
+  routes,
+  setSelectedRoute,
 }) => {
   const [activeTab, setActiveTab] = useState<string>("route");
   const [subActiveTab, setSubActiveTab] = useState<string>("all");
@@ -107,6 +119,36 @@ const Sidebar: React.FC<SidebarProps> = ({
             </button>
           </div>
           <ToolBar />
+          <div className="mt-2 h-120 overflow-y-scroll no-scrollbar">
+            {routes.map((route: any) => (
+              <button
+                key={route.id}
+                onClick={() => {
+                  setSelectedRoute(route)
+                }}
+                className="flex justify-between items-center w-full py-2 border-b text-sm"
+              >
+                <div>{route.route_name}</div>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
+                      <MoreVertical className="h-4 w-4" />
+                      <span className="sr-only">Open menu</span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem
+                      // onClick={}
+                      className="text-destructive focus:text-destructive"
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      <span>Delete</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </button>
+            ))}
+          </div>
         </TabsContent>
 
         {/* create route */}
