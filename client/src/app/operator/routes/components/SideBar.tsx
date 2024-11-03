@@ -144,7 +144,8 @@ const Sidebar: React.FC<SidebarProps> = ({
                 onClick={() => setSubActiveTab("all")}
                 className={cn(
                   "px-4 py-2 grid place-items-center rounded-full border text-sm",
-                  subActiveTab == "all" && "bg-foreground text-background"
+                  // subActiveTab == "all" && "bg-foreground text-background"
+                  subActiveTab == "all" && "border-zinc-400"
                 )}
               >
                 <div>All</div>
@@ -155,7 +156,8 @@ const Sidebar: React.FC<SidebarProps> = ({
                 onClick={() => setSubActiveTab("select")}
                 className={cn(
                   "px-4 py-2 flex rounded-full border text-sm justify-center items-center gap-2",
-                  subActiveTab == "select" && "bg-foreground text-background"
+                  // subActiveTab == "select" && "bg-foreground text-background"
+                  subActiveTab == "select" && "border-zinc-400"
                 )}
               >
                 <div>Selected</div>
@@ -175,7 +177,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                     !selectedStops.includes(stop) && (
                       <button
                         key={stop.stop_id}
-                        className="w-full flex justify-between items-center py-2 px-1 text-sm border-b"
+                        className="w-full flex justify-between items-center py-3 px-1 text-sm border-b"
                       >
                         <div>{stop.stop_name}</div>
                         <div className="flex items-center gap-2">
@@ -183,7 +185,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                             {stop.stop_type}
                           </div>
                           <button
-                            className="bg-foreground text-background p-2 rounded-xl"
+                            className="bg-foreground text-background p-1 rounded-lg"
                             onClick={() => {
                               handleSelect(stop);
                             }}
@@ -202,7 +204,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 {selectedStops?.map((stop: any, index: number) => (
                   <button
                     key={stop.stop_id}
-                    className="w-full flex justify-between items-center py-2 px-1 text-sm border-b"
+                    className="w-full flex justify-between items-center py-3 px-1 text-sm border-b"
                   >
                     <div>{stop.stop_name}</div>
                     <div className="flex items-center gap-2">
@@ -210,7 +212,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                         {stop.stop_type}
                       </div>
                       <button
-                        className="bg-foreground text-background p-2 rounded-xl"
+                        className="bg-foreground text-background p-1 rounded-lg"
                         onClick={() => {
                           setSelectedStops((stops: any) =>
                             stops.filter((_: any, i: number) => i !== index)

@@ -667,6 +667,7 @@ const Map: React.FC = () => {
       <AddRoute
         isOpen={isAddRouteDialogOpen}
         setIsOpen={setIsAddRouteDialogOpen}
+        selectedStops={selectedStops}
       />
 
       {/* Map  */}

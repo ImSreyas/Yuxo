@@ -6,28 +6,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  useForm,
-  SubmitHandler,
-  FormProvider,
-  useWatch,
-} from "react-hook-form";
+import { useForm, SubmitHandler, FormProvider } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectTrigger,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select";
 import {
   FormField,
   FormItem,
   FormLabel,
   FormControl,
   FormMessage,
-  FormDescription,
 } from "@/components/ui/form";
 import axios from "axios";
 import { useState } from "react";
@@ -35,15 +23,23 @@ import { Spinner } from "@/components/ui/spinner";
 import { toast } from "sonner";
 
 const schema = z.object({
-  busStopLabel: z.string().min(1, "Route name is required"),
+  routeName: z.string().min(1, "Route name is required"),
 });
 
 type FormData = {
   routeName: string;
 };
 
-// Fun component
-const AddStop = ({ isOpen, setIsOpen }: { isOpen: any; setIsOpen: any }) => {
+// Main Component
+const AddStop = ({
+  isOpen,
+  setIsOpen,
+  selectedStops,
+}: {
+  isOpen: boolean;
+  setIsOpen: (isOpen: boolean) => void;
+  selectedStops: { location: { coordinates: [number, number] } }[];
+}) => {
   const form = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {},
@@ -53,15 +49,16 @@ const AddStop = ({ isOpen, setIsOpen }: { isOpen: any; setIsOpen: any }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
-    // console.log(data.busStopLabel);
     setIsRouteExists(false);
     setIsLoading(true);
     try {
-      const routeData: any = {
+      const routeData = {
         label: data.routeName,
-        path: [],
+        path: selectedStops.map((stop) => stop.location.coordinates),
+        stops: selectedStops.map((stop:any) => stop.stop_id),
       };
-      const res = await axios.put("", routeData);
+
+      const res = await axios.put("/api/operator/route/add", routeData);
       if (res.data.success) {
         toast("Success", {
           description: "Route added successfully",
@@ -72,13 +69,16 @@ const AddStop = ({ isOpen, setIsOpen }: { isOpen: any; setIsOpen: any }) => {
           duration: 6000,
         });
       }
+      setIsOpen(false);
     } catch (e: any) {
-      console.log(e.response.data.data.code);
+      console.log(e);
       if (e?.response?.data?.data?.code == 23505) {
         setIsRouteExists(true);
+        console.log("working");
       }
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   return (
@@ -99,14 +99,14 @@ const AddStop = ({ isOpen, setIsOpen }: { isOpen: any; setIsOpen: any }) => {
                     <FormLabel>Bus route label</FormLabel>
                     <FormControl>
                       <Input
-                        id="busStopLabel"
-                        placeholder="Bus Stop Name"
+                        id="routeName"
+                        placeholder="Bus Route Name"
                         {...field}
                         className="h-[2.6rem]"
                       />
                     </FormControl>
                     <FormMessage>
-                      {isRouteExists && "Label already taken"}
+                      {isRouteExists && "Label already used"}
                     </FormMessage>
                   </FormItem>
                 )}
