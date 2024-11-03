@@ -392,6 +392,7 @@ const Map: React.FC = () => {
       mapRef.current?.remove();
       selectedLocationRef.current?.remove();
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentLocation]);
 
   useEffect(() => {
