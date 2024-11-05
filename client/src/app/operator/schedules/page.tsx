@@ -1,8 +1,8 @@
 import React from "react";
-import Nav from "../components/Nav";
+import Map from "./components/Map";
 
 const page = () => {
-  return <div>Schedules page</div>;
+  return <Map />;
 };
 
 export default page;

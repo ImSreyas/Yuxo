@@ -1,4 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
+import { request } from "http";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -28,21 +29,34 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // Main functionality
-  const { data, error } = await supabase
-    .from("tbl_routes")
-    .select("*")
-    .eq("operator_id", user.id);
+  try {
+    const requestData: any = await req.json();
+    if (requestData?.routeId) {
+      const { data, error } = await supabase
+        .from("tbl_route_stops")
+        .select(`*,tbl_bus_stops(stop_name)`)
+        .eq("route_id", requestData.routeId);
 
-  if (error) {
+      if (error) {
+        return NextResponse.json(
+          { success: false, data: error, message: "No route found" },
+          { status: 500 }
+        );
+      }
+
+      return NextResponse.json(
+        { success: true, data: data, message: "Route found" },
+        { status: 200 }
+      );
+    }
+  } catch (e) {
     return NextResponse.json(
-      { success: false, data: error, message: "No routes found" },
+      { success: false, data: null, message: "Request body not found" },
       { status: 500 }
     );
   }
-
   return NextResponse.json(
-    { success: true, data: data, message: "Routes found" },
-    { status: 200 }
+    { success: false, data: null, message: "Default return" },
+    { status: 500 }
   );
 }
