@@ -22,11 +22,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 const TimePicker = ({
   value,
-  onChange,
+  // onChange,
   onTimeChange,
 }: {
   value: string;
-  onChange: (time: string) => void;
+  // onChange: (time: string) => void;
   onTimeChange: (time: string) => void;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -53,7 +53,7 @@ const TimePicker = ({
     const timeString = `${formattedHours
       .toString()
       .padStart(2, "0")}:${newMinutes.toString().padStart(2, "0")}`;
-    onChange(timeString);
+    // onChange(timeString);
     onTimeChange(timeString);
     setIsOpen(false);
   };
@@ -97,7 +97,7 @@ const TimePicker = ({
               <SelectTrigger>
                 <SelectValue placeholder="HH" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="max-h-60">
                 {Array.from({ length: 12 }, (_, i) => i + 1).map((h) => (
                   <SelectItem key={h} value={h.toString()}>
                     {h.toString().padStart(2, "0")}
@@ -112,7 +112,7 @@ const TimePicker = ({
               <SelectTrigger>
                 <SelectValue placeholder="MM" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="max-h-60">
                 {Array.from({ length: 12 }, (_, i) => i * 5).map((m) => (
                   <SelectItem key={m} value={m.toString()}>
                     {m.toString().padStart(2, "0")}
